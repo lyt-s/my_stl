@@ -41,5 +41,20 @@ int main() {
   for (auto const &a : zoo) {
     a->speak();
   }
+
+  union EndianTest {
+    int intValue;
+    char byteArray[sizeof(int)];
+  };
+
+  EndianTest test;
+  test.intValue = 1;
+
+  if (test.byteArray[0] == 1) {
+    std::cout << "Little Endian" << std::endl;
+  } else {
+    std::cout << "Big Endian" << std::endl;
+  }
+
   return 0;
 }
