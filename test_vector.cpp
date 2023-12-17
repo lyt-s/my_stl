@@ -68,8 +68,12 @@ struct Vector {
       : m_alloc(alloc) {
     // size_t n = std::distance(first, last);
     size_t n = last - first;
+    m_data = m_alloc.allocate(n);  // 申请空间
+    // m_data = new int[n];  // 申请空间
+    m_capacity = m_size = n;
     for (size_t i = 0; i < n; ++i) {
-      m_data[i] = *first++;
+      m_data[i] = *first;
+      ++first;
     }
   }
 
@@ -119,7 +123,8 @@ struct Vector {
     if (m_size == 0) {
       m_data = nullptr;
     } else {
-      m_data = new int[m_size];
+      // m_data = new int[m_size];
+      m_data = m_alloc.allocate(m_size);
     }
     if (old_capacity != 0) {
       for (size_t i = 0; i != m_size; i++) {
@@ -323,6 +328,7 @@ struct Vector {
     }
     reserve(v.m_size);
     m_size = v.m_size;
+    m_capacity = v.m_capacity;
     if (m_size != 0) {
       // m_data = new int[v.size()];
       // memcpy(m_data, v.m_data, m_size * sizeof(int));
@@ -374,23 +380,23 @@ struct Vector {
     return *p;
   }
 
-  int* data() noexcept { return m_data; }
+  T* data() noexcept { return m_data; }
 
-  int const* data() const noexcept { return m_data; }
+  T const* data() const noexcept { return m_data; }
 
-  int const* cdata() const noexcept { return m_data; }
+  T const* cdata() const noexcept { return m_data; }
 
-  int* begin() noexcept { return m_data; }
+  T* begin() noexcept { return m_data; }
 
-  int* end() noexcept { return m_data + m_size; }
+  T* end() noexcept { return m_data + m_size; }
 
-  int const* begin() const noexcept { return m_data; }
+  T const* begin() const noexcept { return m_data; }
 
-  int const* end() const noexcept { return m_data + m_size; }
+  T const* end() const noexcept { return m_data + m_size; }
 
-  int const* cbegin() const noexcept { return m_data; }
+  T const* cbegin() const noexcept { return m_data; }
 
-  int const* cend() const noexcept { return m_data + m_size; }
+  T const* cend() const noexcept { return m_data + m_size; }
 
   std::reverse_iterator<T*> rbegin() noexcept {
     return std::make_reverse_iterator(m_data + m_size);
@@ -423,9 +429,7 @@ struct Vector {
 
   T* erase(T const* it) noexcept(std::is_nothrow_move_assignable_v<T>) {
     size_t i = it - m_data;
-    if (i >= m_size) [[unlikely]] {
-      throw std::out_of_range("out of range");
-    }
+
     for (size_t j = i + 1; j != m_size; j++) {
       m_data[j - 1] = std::move(m_data[j]);
     }
@@ -437,13 +441,7 @@ struct Vector {
   T* erase(T const* first,
            T const* last) noexcept(std::is_nothrow_move_assignable_v<T>) {
     size_t i = first - m_data;
-    if (i >= m_size) [[unlikely]] {
-      throw std::out_of_range("out of range");
-    }
     size_t j = last - m_data;
-    if (j >= m_size) [[unlikely]] {
-      throw std::out_of_range("out of range");
-    }
     size_t diff = j - i;
     for (; j != m_size; j++) {
       m_data[j - diff] = std::move(m_data[j]);
@@ -491,15 +489,17 @@ struct Vector {
     }
   }
 
-  template <std::random_access_iterator InputIt>  // todo
+  template <std::random_access_iterator InputIt>
   void assign(InputIt first, InputIt last) {
+    // 将原来的内容清空
     clear();
     size_t n = last - first;
     reserve(n);
     m_size = n;
     for (size_t i = 0; i < n; ++i) {
       //   m_data[i] = *first++;
-      std::construct_at(&m_data[i], *first++);
+      std::construct_at(&m_data[i], *first);
+      ++first;
     }
   }
 
@@ -509,12 +509,13 @@ struct Vector {
 
   Vector& operator=(std::initializer_list<T> ilist) {
     assign(ilist.begin(), ilist.end());
+    return *this;
   }
 
   // ----------------------------------------------------------------
 
   template <class... Args>
-  int* emplace(int const* it, Args&&... args) {
+  T* emplace(T const* it, Args&&... args) {
     size_t j = it - m_data;
     reserve(m_size + 1);
     if (j >= m_size) [[unlikely]] {
@@ -531,7 +532,7 @@ struct Vector {
   }
 
   // insert 一个
-  int* insert(int const* it, int&& value) {
+  T* insert(T const* it, T&& value) {
     size_t j = it - m_data;
 
     reserve(m_size + 1);
@@ -546,7 +547,7 @@ struct Vector {
     return m_data + j;
   }
 
-  int* insert(int const* it, int const& value) {
+  T* insert(T const* it, T const& value) {
     size_t j = it - m_data;
 
     reserve(m_size + 1);
@@ -561,10 +562,10 @@ struct Vector {
     return m_data + j;
   }
 
-  int* insert(int const* it, size_t n, int const& val) {
+  T* insert(T const* it, size_t n, T const& val) {
     size_t j = it - m_data;
     if (n == 0) [[unlikely]]
-      return const_cast<int*>(it);
+      return const_cast<T*>(it);
     reserve(m_size + n);
     // j ~ m_size => j + n ~ m_size + n
     for (size_t i = m_size; i != j; i--) {
@@ -579,11 +580,11 @@ struct Vector {
   }
 
   template <std::random_access_iterator InputIt>
-  int* insert(int const* it, InputIt first, InputIt last) {
+  T* insert(T const* it, InputIt first, InputIt last) {
     size_t j = it - m_data;
     size_t n = last - first;
     if (n == 0) [[unlikely]] {
-      return const_cast<int*>(it);
+      return const_cast<T*>(it);
     }
     reserve(m_size + n);
     // j ~ m_size => j + 1 ~ m_size + n
@@ -598,7 +599,7 @@ struct Vector {
     return m_data + j;
   }
 
-  int* insert(int const* it, std::initializer_list<int> ilist) {
+  T* insert(T const* it, std::initializer_list<T> ilist) {
     return insert(it, ilist.begin(), ilist.end());
   }
   ~Vector() noexcept { delete[] m_data; }
@@ -617,7 +618,19 @@ struct Vector {
 };
 
 int main() {
-  // 1.
+  // 实现 operator[] size()
+  auto print_list = [&](Vector<int>& vector) {
+    for (size_t i = 0; i < vector.size(); ++i) {
+      printf("arr[%zd] = %d\n ", i, vector[i]);
+    }
+  };
+
+  auto push_list = [&](Vector<int>& vector) {
+    for (size_t i = 0; i < 16; ++i) {
+      vector.push_back(i);
+    }
+  };
+  // 1. test resize [] 构造函数
   // // explicit Vector(size_t n)
   // //   Vector arr2 = 3; // error
   // // 1. Vector(size_t n)
@@ -649,6 +662,7 @@ int main() {
   // arr.resize(0);
   // arr.clear();
 
+  // 2. test 默认构造，reserve
   //   Vector arr;
   //   // size =0 cap =0
   //   // size =1 cap =1 *
@@ -673,44 +687,83 @@ int main() {
   //      // error : free(): double free detected in tcache
   //      // todo 定义析构函数后，要记着定义拷贝构造和移动构造
 
-  // 迭代器
-  Vector<int> arr;
-  arr.reserve(16);
+  // 3. test push_back erase
+  // for (int i = 0; i < 16; i++) {
+  //   // printf("arr[%zd] = %d\n", i, arr[i]);
+  //   printf("arr.push_back(%d)\n", i);
+  //   arr.push_back(i);
+  // }
+  // for (size_t i = 0; i < 16; i++) {
+  //   printf("arr[%zd] = %d\n", i, arr[i]);
+  // }
+  // arr.erase(arr.begin());
+  // arr.erase(arr.begin() + 2, arr.begin() + 5);
+  // for (size_t i = 0; i < arr.size(); i++) {
+  //   printf("arr[%zd] = %d\n", i, arr[i]);
+  // }
 
-  for (int i = 0; i < 16; i++) {
-    // printf("arr[%zd] = %d\n", i, arr[i]);
-    printf("arr.push_back(%d)\n", i);
-    arr.push_back(i);
-  }
-  for (size_t i = 0; i < 16; i++) {
-    printf("arr[%zd] = %d\n", i, arr[i]);
-  }
-  // todo  assign
-  //   arr.erase(arr.begin() + 4);
-  Vector<int> bar;
-  printf("std::move before\n");
-  printf("arr.size() = %zd\n", arr.size());
-  printf("bar.size() = %zd\n", bar.size());
-  bar = std::move(arr);  // arr 变为空
-  printf("std::move after\n");
-  printf("arr.size() = %zd\n", arr.size());
-  printf("bar.size() = %zd\n", bar.size());
+  // 4. test move
+  // Vector<int> bar;
+  // printf("std::move before\n");
+  // printf("arr.size() = %zd\n", arr.size());
+  // printf("bar.size() = %zd\n", bar.size());
+  // bar = std::move(arr);  // arr 变为空
+  // printf("std::move after\n");
+  // printf("arr.size() = %zd\n", arr.size());
+  // printf("bar.size() = %zd\n", bar.size());
 
+  // 5. test  Vector{std::initializer_list<int> ilist}
   //   // 添加: Vector{std::initializer_list<int> ilist}
   //   arr = Vector({1, 2, 3, 4, 5});
   //   arr = {1, 2, 3};
 
-  // 测试  shrink_to_fit
+  // 6. test  shrink_to_fit
+  Vector<int> bar;
   bar.reserve(100);
   bar.resize(100);
   std::cout << "Capacity of a 100-element vector is " << bar.capacity() << '\n';
   bar.resize(50);
   std::cout << "Capacity after resize(50) is " << bar.capacity() << '\n';
   bar.shrink_to_fit();
-  std::cout << "Capacity after shrink_to_fit() is " << bar.capacity() << '\n';
+  std::cout << "Capacity after shrink_to_fit() is" << bar.capacity() << '\n';
   bar.clear();
   std::cout << "Capacity after clear() is " << bar.capacity() << '\n';
   bar.shrink_to_fit();
   std::cout << "Capacity after shrink_to_fit() is " << bar.capacity() << '\n';
+
+  // 7.  test assign
+  // Vector<int> arr3;
+  // auto print_list = [&]() {
+  //   for (auto const& it : arr3) {
+  //     std::cout << it << ' ';
+  //   }
+  //   std::cout << '\n';
+  // };
+  // arr3 = {1, 2, 3, 4, 5};
+  // print_list();
+  // arr3.assign(5, 9);
+  // print_list();
+  // const Vector<int> extra = {6, 7, 8, 9, 10};
+  // arr3.assign(extra.begin(), extra.end());
+  // print_list();
+
+  // // 8. test insert  pop_back() arr.capacity arr.size() front back data
+  // Vector<int> arr;
+  // for (int i = 0; i < 16; i++) {
+  //   printf("arr.push_back(%d)\n", i);
+  //   arr.push_back(i);  // O(n)
+  // }
+  // arr.insert(arr.begin() + 3, {40, 41, 42});
+  // arr.pop_back();
+  // for (size_t i = 0; i < arr.size(); i++) {
+  //   printf("arr[%zd] = %d\n", i, arr[i]);
+  // }
+  // std::cout << "arr.capacity = " << arr.capacity() << '\n';
+  // std::cout << "arr.size = " << arr.size() << '\n';
+  // std::cout << "arr.front() = " << arr.front() << '\n';
+  // std::cout << "arr.back() = " << arr.back() << '\n';
+  // std::cout << "arr.data() = " << arr.data() << '\n'
+  //           << "*arr.data() = " << *arr.data() << '\n';
+
   return 0;
 }
