@@ -96,9 +96,8 @@ struct Vector {
     return *this;
   }
 
-  Vector(std::initializer_list<int> ilist) {
-    Vector(ilist.begin(), ilist.end());
-  }
+  Vector(std::initializer_list<int> ilist)
+      : Vector(ilist.begin(), ilist.end()) {}
 
   template <std::random_access_iterator InputIt>
   explicit Vector(InputIt first, InputIt last) {
@@ -343,6 +342,7 @@ struct Vector {
   // ?
   Vector &operator=(std::initializer_list<int> ilist) {
     assign(ilist.begin(), ilist.end());
+    return *this;
   }
 
   template <class... Args>
@@ -395,9 +395,14 @@ int main() {
 
   //   //   todo
   //   initializer list
-  //   Vector vec5{1, 2, 3, 4, 5, 6};
-  //   std::cout << vec5[1] << "\n";
-  //   print_list(vec5);
+  // error 初始化失败，出现段错误，是因为
+  // initializer_list构造函数在调用别的构造函数时写在了{}内部，
+  // 应该写在 : 后面 --->
+  //    Vector(std::initializer_list<int> ilist)
+  //   : Vector(ilist.begin(), ilist.end()) {}
+  Vector vec5{1, 2, 3, 4, 5, 6};
+  std::cout << vec5[1] << "\n";
+  print_list(vec5);
 
   // test clear() push_back() resize() pop_back()
   //   Vector vec(4, 3);
