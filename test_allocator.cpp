@@ -25,14 +25,22 @@ int main() {
     }
   };
 
+  auto print_pointer_list = [&](int* ptr) {
+    while (ptr != nullptr && *ptr != 0) {
+      printf("ptr = %d\n", *ptr);
+      ++ptr;
+    }
+  };
+
   // 使用 allocator 分配未初始化内存
   int* p = alloc.allocate(vec.size());
 
   // 使用 uninitialized_copy 将 vec 中的元素复制到未初始化的内存中
   std::uninitialized_copy(vec.begin(), vec.end(), p);
-  for (int i = 0; i < vec.size(); ++i) {
-    std::cout << p[i] << " ";
-  }
+  // for (int i = 0; i < vec.size(); ++i) {
+  //   std::cout << p[i] << " ";
+  // }
+  print_pointer_list(p);
   std::cout << std::endl;
 
   // 使用完成后，需要手动调用 destructor 和 deallocate 释放资源
@@ -47,9 +55,10 @@ int main() {
 
   // 使用 uninitialized_copy_n 将 vec 中的前3个元素复制到未初始化的内存中
   std::uninitialized_copy_n(vec.begin(), 3, p2);
-  for (int i = 0; i < 3; ++i) {
-    std::cout << p2[i] << " ";
-  }
+  // for (int i = 0; i < 3; ++i) {
+  //   std::cout << p2[i] << " ";
+  // }
+  print_pointer_list(p2);
   std::cout << std::endl;
   // 使用完成后，需要手动调用 destructor 和 deallocate 释放资源
   for (std::size_t i = 0; i < 3; ++i) {
@@ -65,9 +74,10 @@ int main() {
 
   // 使用 uninitialized_fill 将值42填充到未初始化的内存中
   std::uninitialized_fill(p3, p3 + 5, 42);
-  for (size_t i = 0; i < 5; ++i) {
-    std::cout << p3[i] << " ";
-  }
+  // for (size_t i = 0; i < 5; ++i) {
+  //   std::cout << p3[i] << " ";
+  // }
+  print_pointer_list(p3);
   // 使用完成后，需要手动调用 destructor 和 deallocate 释放资源
   for (std::size_t i = 0; i < 5; ++i) {
     std::destroy_at(p3 + i);
