@@ -490,44 +490,44 @@ int main() {
   };
 
   // // test  默认构造函数
-  // Vector vec;
-  // // 有参构造函数
-  // std::cout << "vec2 ---------------------------------" << std::endl;
-  // Vector vec2(3, 8);
-  // print_list(vec2);
-  // // 拷贝构造  实现深拷贝 --如果没有就会
-  // // free(): double free detected in tcache 2
-  // std::cout << "vec3 ---------------------------------" << std::endl;
-  // Vector vec3(vec2);
-  // print_list(vec3);
-  // std::cout << "vec4 ---------------------------------" << std::endl;
-  // // 会调用 拷贝构造函数
-  // Vector vec4 = vec3;
-  // vec4[3] = 0;
-  // print_list(vec4);
-  // std::cout << "arr ---------------------------------" << std::endl;
-  // Vector arr;
-  // // 会调用拷贝赋值函数， 注意 和 Vector arr = vec4 区别
-  // arr = vec4;
-  // print_list(arr);
-  // // 移动构造函数
-  // Vector bar(std::move(vec2));
-  // // 移动构造函数
-  // Vector car = std::move(bar);
-  // print_list(car);
-  // // 会调用，移动赋值函数， 注意和上面的区别
-  // vec4 = std::move(vec3);
-  // print_list(vec4);
-  // //   //   todo
-  // //   initializer list
-  // // error 初始化失败，出现段错误，是因为
-  // // initializer_list构造函数在调用别的构造函数时写在了{}内部，
-  // // 应该写在 : 后面 --->
-  // //    Vector(std::initializer_list<T> ilist)
-  // //   : Vector(ilist.begin(), ilist.end()) {}
-  // Vector vec5{1, 2, 3, 4, 5, 6};
-  // std::cout << vec5[1] << "\n";
-  // print_list(vec5);
+  Vector<int> vec;
+  // 有参构造函数
+  std::cout << "vec2 ---------------------------------" << std::endl;
+  Vector<int> vec2(3, 8);
+  print_list(vec2);
+  // 拷贝构造  实现深拷贝 --如果没有就会
+  // free(): double free detected in tcache 2
+  std::cout << "vec3 ---------------------------------" << std::endl;
+  Vector<int> vec3(vec2);
+  print_list(vec3);
+  std::cout << "vec4 ---------------------------------" << std::endl;
+  // 会调用 拷贝构造函数
+  Vector<int> vec4 = vec3;
+  vec4[3] = 0;
+  print_list(vec4);
+  std::cout << "arr ---------------------------------" << std::endl;
+  Vector<int> arr;
+  // 会调用拷贝赋值函数， 注意 和 Vector arr = vec4 区别
+  arr = vec4;
+  print_list(arr);
+  // 移动构造函数
+  Vector<int> bar(std::move(vec2));
+  // 移动构造函数
+  Vector<int> car = std::move(bar);
+  print_list(car);
+  // 会调用，移动赋值函数， 注意和上面的区别
+  vec4 = std::move(vec3);
+  print_list(vec4);
+  //   //   todo
+  //   initializer list
+  // error 初始化失败，出现段错误，是因为
+  // initializer_list构造函数在调用别的构造函数时写在了{}内部，
+  // 应该写在 : 后面 --->
+  //    Vector(std::initializer_list<T> ilist)
+  //   : Vector(ilist.begin(), ilist.end()) {}
+  Vector vec5{1, 2, 3, 4, 5, 6};
+  std::cout << vec5[1] << "\n";
+  print_list(vec5);
 
   // test clear() push_back() resize() pop_back()
   //   Vector vec(4, 3);
@@ -580,10 +580,10 @@ int main() {
   // vec.erase(vec.begin(), vec.begin() + 3);
   // print_list(vec);
 
-  Vector<char *> lines;
-  lines.push_back((char *)"hello");
-  lines.push_back((char *)"world");
-  print_string_list(lines);
+  // Vector<char *> lines;
+  // lines.push_back((char *)"hello");
+  // lines.push_back((char *)"world");
+  // print_string_list(lines);
 
   return 0;
 }
