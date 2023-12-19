@@ -67,7 +67,7 @@ int main() {
 
   vec5.push_back(7);
   vec5.emplace_back(7);
-
+  print_list(vec5);
   // test clear() push_back() resize() pop_back()
   //   Vector vec(4, 3);
   //   print_list(vec);
