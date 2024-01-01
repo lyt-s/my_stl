@@ -70,7 +70,7 @@ struct Vector {
     if (this == &other) {
       return *this;
     }
-    // 将自己清空
+    // 将自己清空，防止发生内存泄漏
     if (m_capacity) {
       m_alloc.deallocate(m_data, m_capacity);
     }

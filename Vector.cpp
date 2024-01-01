@@ -68,6 +68,8 @@ int main() {
   vec5.push_back(7);
   vec5.emplace_back(7);
   print_list(vec5);
+  // operator 返回为  Vector & ---> 这样才允许连续赋值
+  vec5 = vec2 = vec3;
   // test clear() push_back() resize() pop_back()
   //   Vector vec(4, 3);
   //   print_list(vec);
