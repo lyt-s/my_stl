@@ -20,3 +20,4 @@ endforeach()
 
 add_executable(test_inline foo.cc test_inline.cc)
 add_subdirectory(cpplifetimetest)
+add_subdirectory(c++20)
