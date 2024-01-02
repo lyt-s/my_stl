@@ -117,28 +117,30 @@ void func2(T &&...t) {
 //   puts("---");
 // }  // t.~Test() 自动调用析构函数
 
-// std::string const &func(std::string s) {
+// std::string const &func_test(std::string s) {
 //   // 会将 hello 拷贝一份 --s
 //   return s;  // s 出作用域时自动析构,
 // }
 
 std::string const &func_test(std::string const &s) {
   // 会将 hello 拷贝一份 --s
-  return s;  // s 出作用域时自动析构,
+  return s;  // s 出作用域时自动析构
 }
 
 int main() {
   // 测试 5
   // 1.
   // auto ret = func_test(std::string("hello"));
-  // std::cout << ret << std::endl;
-  // func(std::string s);  segmentation fault
-  // 这里 s , 出作用域 时， 会自动析构
+  // // std::cout << *ret << std::endl;
+  // printf("%s\n", ret.c_str());
+
+  // segmentation fault 这里 s, 出作用域 时， 会自动析构 --->  std::string const
+  // &func_test(std::string s) 情况下
 
   // 2.
-  //  auto s = std::string("test");
-  //  auto ret = &func_test(s);  // 正常的 ret 和 s 是同一个对象
-
+  // auto s = std::string("test");
+  // auto ret = &func_test(s);  // 正常的 ret 和 s 是同一个对象
+  // printf("%s\n", ret->c_str());
   // 3.
   // std::string const *ret;
   // {
@@ -148,10 +150,12 @@ int main() {
   //   // ，变量未初始化，调试模式未初始化变量为0
   //   // ，但是发布模式未初始化变量则有可能不是0. msvc
   // }
-  // std::cout << *ret << std::endl;  // Release 出现异常 Debug模式正常
+  // // std::cout << *ret << std::endl;
+  // printf("%s\n", ret->c_str());  // Release 出现异常 Debug模式正常
 
   // 4. 在 func_test(const std::string & s)下，release 和 debug
   // 模式下都显示正常，但是存在泄露
+  // 在返回时，它被以引用的形式返回。这意味着在main函数中，ret变量实际上引用了一个临时std::string对象，该对象是由std::string("hello")复制构造而来。
   // 其实 hello, 在 " ; "处就析构了，有一个小字符优化，
   // 有潜在隐患,肯定有问题，一定已经释放掉了。
   // auto ret = func_test(std::string(
@@ -187,13 +191,12 @@ int main() {
   // puts("===");
 
   // 测试 4 move
-  // Test t("t");  // 会在main结束，delete 空指针
-  // func(std::move(t)), puts("===");
+  // Test t("t");  // 调用Test的构造函数 ，会在main } 处析构，delete 空指针
+  // func(std::move(t)), puts("===");  // 调用 func(Test &&t)
   // {
-  //   Test t_move(std::move(
-  //       t));  //
-  //       移动就是创建了一个一模一样的对象，仅此而已，还是会再次析构t
-  //   // 此时 t 已经没了
+  //   Test t_move(std::move(t));  // 调用Test的移动构造函数
+  //   // 移动就是创建了一个一模一样的对象，仅此而已，还是会再次析构t
+  //   //  此时 t 已经没了
   //   func(t_move), puts("===");
   // }
 
@@ -205,13 +208,14 @@ int main() {
   /* t2 = std::move(t); */
 
   // 测试 6
-  // 动的是智能指针本身，不是指针指向的内容
+  // 这里移动的是智能指针本身，不是指针指向的内容
   // 默认unique_ptr不会调用调用test的拷贝和移动构造函数
-  std::unique_ptr<Test> t(new Test("t"));
-  // 所以move 时，不会调用移动构造函数，这里移动的是，指针
-  // 移动的只是房产证，不是房子
-  // 不能拷贝
-  func(std::move(t));
+  // std::unique_ptr<Test> t(new Test("t"));
+  /*所以move 时，不会调用移动构造函数，这里移动的是，指针
+  移动的只是房产证，不是房子
+  不能拷贝
+  */
+  // func(std::move(t));
 
   /* auto ret = func(std::string("hello")); */
   /* printf("%s\n", ret.c_str()); */

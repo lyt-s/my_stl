@@ -10,7 +10,7 @@
 #include <type_traits>
 #include <utility>
 
-#include "foo.h"
+// #include "foo.h"
 
 template <class T, class Alloc = std::allocator<T>>
 struct Vector {
@@ -332,7 +332,9 @@ struct Vector {
     if (m_size != 0) {
       // m_data = new int[v.size()];
       // memcpy(m_data, v.m_data, m_size * sizeof(int));
-      std::construct_at(&m_data[i], std::as_const(v.m_data[i]));
+      for (size_t i = 0; i != m_size; i++) {
+        std::construct_at(&m_data[i], std::as_const(v.m_data[i]));
+      }
     }
     return *this;
   }

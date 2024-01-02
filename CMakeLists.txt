@@ -3,6 +3,8 @@ cmake_minimum_required(VERSION 3.18)
 
 if (NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Release)
+    # set(CMAKE_BUILD_TYPE Debug)
+
 endif()
 set(CMAKE_CXX_STANDARD 20)
 
@@ -18,6 +20,6 @@ foreach (source IN ITEMS ${sources})
 endforeach()
 
 
-add_executable(test_inline foo.cc test_inline.cc)
 add_subdirectory(cpplifetimetest)
 add_subdirectory(c++20)
+add_subdirectory(c++11)
