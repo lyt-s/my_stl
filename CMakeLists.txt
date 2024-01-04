@@ -13,7 +13,8 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 project(stl LANGUAGES CXX)
 
-file(GLOB sources CONFIGURE_DEPENDS *.cpp)
+# 这里要注意 GLOB 和 GLOB_RECURSE 的区别
+file(GLOB sources CONFIGURE_DEPENDS *.cpp) 
 foreach (source IN ITEMS ${sources})
     get_filename_component(name "${source}" NAME_WLE)
     add_executable(${name} ${name}.cpp)
