@@ -1,7 +1,9 @@
 #include <cstdio>
+#include <functional>
 #include <iostream>
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "cppdemangle.h"
 
@@ -127,7 +129,32 @@ std::string const &func_test(std::string const &s) {
   return s;  // s 出作用域时自动析构
 }
 
+std::vector<std::function<void()>> g_funcs;
+
+void fun(auto f) { g_funcs.emplace_back(std::move(f)); }
+
+void bao() {
+  for (auto &f : g_funcs) {
+    f();
+  }
+}
+
+void foo() {
+  // int i = 1;
+  std::shared_ptr<int> i(new int);
+
+  fun([i]() { printf("1_i = %d\n", (*i)++); });
+  fun([i]() { printf("2_i = %d\n", (*i)++); });
+}
+
 int main() {
+  // lambda 函数合适传& =
+  // 这里会出错， 将 i  推到了全局， 其实已经析构
+  // i 来计数，lambda 和shared_ptr 结合使用
+  foo();
+  // [&]这里会乱打印i, = 会正常打印
+  bao();
+
   // 测试 5
   // 1.
   // auto ret = func_test(std::string("hello"));
