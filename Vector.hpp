@@ -16,6 +16,19 @@
 
 template <class T, class Alloc = std::allocator<T>>
 struct Vector {
+  using value_type = T;
+  using allocator_type = Alloc;
+  using size_type = size_t;
+  using difference_type = ptrdiff_t;
+  using pointer = T *;
+  using const_pointer = T const *;
+  using reference = T &;
+  using const_reference = T const &;
+  using iterator = T *;
+  using const_iterator = T const *;
+  using reverse_iterator = std::reverse_iterator<T *>;
+  using const_reverse_iterator = std::reverse_iterator<T const *>;
+
   T *m_data;
   size_t m_size;
   size_t m_capacity;
@@ -30,8 +43,11 @@ struct Vector {
         std::destroy_at(&m_data[i]);
       }
     }
-    m_alloc.deallocate(m_data, m_capacity);
-    // delete[] m_data;
+    if (m_capacity != 0) {
+      m_alloc.deallocate(m_data, m_capacity);
+
+      // delete[] m_data;
+    }
   }
 
   // 有参构造,不给初始化值时，默认给0
