@@ -22,6 +22,7 @@ int main() {
 
   // // test  默认构造函数
   Vector<int> vec;
+  std::cout << "vec.sizeof = " << sizeof(vec) << std::endl;
   // 有参构造函数
   std::cout << "vec2 ---------------------------------" << std::endl;
   Vector<int> vec2(3, 8);
