@@ -1,50 +1,22 @@
-#include <string.h>
-
 #include <iostream>
-#include <map>
-#include <string>
-using namespace std;
-class Student {
- private:
-  int num;
-  char* name;
-
+class E {
  public:
-  Student() {
-    name = new char(20);
-    cout << "Student" << endl;
-  };
-  ~Student() {
-    cout << "~Student " << &name << endl;
-    delete name;
-    name = NULL;
-  };
-  Student(const Student& s) {  // 拷贝构造函数
-    // 浅拷贝，当对象的name和传入对象的name指向相同的地址
-    name = s.name;
-    // 深拷贝
-    // name = new char(20);
-    // memcpy(name, s.name, strlen(s.name));
-    cout << "copy Student" << endl;
-  };
+  virtual void func(int i = 0) { std::cout << "E::func()\t" << i << "\n"; }
 };
-int main() {
-  {  // 花括号让s1和s2变成局部对象，方便测试
-    Student s1;
-    Student s2(s1);  // 复制对象
-  }
+class F : public E {
+ public:
+  virtual void func(int i = 1) { std::cout << "F::func()\t" << i << "\n"; }
+};
 
+void test2() {
+  F* pf = new F();
+  E* pe = pf;
+  pf->func();  // F::func() 1  正常，就该如此；
+  pe->func();  // F::func() 0
+               // 哇哦，这是什么情况，调用了子类的函数，却使用了基类中参数的默认值！
+}
+
+int main() {
+  test2();
   return 0;
 }
-// 浅拷贝执行结果：
-// Student
-// copy Student
-//~Student 0x7fffed0c3ec0
-//~Student 0x7fffed0c3ed0
-//*** Error in `/tmp/815453382/a.out': double free or corruption (fasttop):
-// 0x0000000001c82c20 * **
-// 深拷贝执行结果：
-// Student
-// copy Student
-//~Student 0x7fffebca9fb0
-//~Student 0x7fffebca9fc0
