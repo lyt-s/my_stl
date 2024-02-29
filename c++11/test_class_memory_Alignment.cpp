@@ -16,18 +16,26 @@ class Base {
   static std::string s_x;
 
   // int y;
-  // double value;
+  double value;
+};
+
+class Base2 {
+  virtual void print_2() { printf("print my value %d\n", x); }
+
+ private:
+  int x = 0;
+  double value;
 };
 
 std::string Base::s_x = "lz";
 
-class Driver : public Base {
+class Driver : public Base, public Base2 {
  public:
   virtual void print() { printf("print my value %d\n", xl); }
 
  private:
   // string 32大小
-  std::string name;
+  // std::string name;
   int xl = 3;
   char a;
   int m_y;
