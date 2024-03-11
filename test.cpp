@@ -14,6 +14,16 @@
 //   Parent p2 = p;
 //   p2 = p1;
 // }
+#include <iostream>
+#include <utility>
+class E {
+ public:
+  virtual void func(int i = 0) { std::cout << "E::func()\t" << i << "\n"; }
+};
+class F : public E {
+ public:
+  virtual void func(int i = 1) { std::cout << "F::func()\t" << i << "\n"; }
+};
 
 #include <stdio.h>
 
@@ -33,6 +43,13 @@ void show(FUNC2 fun, int arg1, int* arg2) {
 int main() {
   int a;
   show(multi, 10, &a);
+  int i = 8;
+  int j = 9;
+  int& x = i;
+  i = std::move(j);  // 就是拷贝，因为 int 没有移动构造函数
+  std::cout << x << std::endl;
+  std::cout << i << std::endl;
+  std::cout << j << std::endl;
   return 0;
 }
 
