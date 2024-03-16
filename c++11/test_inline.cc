@@ -4,8 +4,10 @@
 
 #include "foo.h"
 
-// int32_t i = 3;
+inline int32_t i = 3;
 // extern int32_t i;  // 1. --> foo.cpp
+
+// int32_t i;
 
 #include <iostream>
 #include <memory>

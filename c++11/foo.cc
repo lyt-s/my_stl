@@ -4,8 +4,12 @@
 #include <cstdio>
 #include <iostream>
 
-// inline int32_t i = 0;
-
+inline int32_t i = 8;
+struct S {
+  int x;
+  float y;
+  double z;
+};
 // int i = 3;  // 1.
 void foo() {
   std::cout << "foo " << i++ << "!"
