@@ -10,8 +10,12 @@
 // static int twice(int x) { return x * 2; };
 // 这里和内联优化没有任何关系
 // inline int i = 9;
+void print() { printf("C++ 17 my name is \n"); }
 
-inline int twice(int x) { return x * 2; };
+inline int twice(int x) {
+  print();
+  return x * 2;
+};
 void foo();
 
 struct Foo {
@@ -19,5 +23,5 @@ struct Foo {
   std::string zyf;
 
  public:
-  void print() const { printf("my name is %s\n", zyf.c_str()); }
+  void print() const { printf("C++ 17 my name is %s\n", zyf.c_str()); }
 };

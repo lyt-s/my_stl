@@ -1,13 +1,13 @@
-#include <stdio.h>
-
-#include <cstdint>
-
 #include "foo.h"
+#include "stdint.h"
+#include "stdio.h"
 
 inline int32_t i = 3;
 // extern int32_t i;  // 1. --> foo.cpp
 
 // int32_t i;
+
+#include <a.h>
 
 #include <iostream>
 #include <memory>
@@ -26,13 +26,23 @@ struct S {
   }
 };
 
+void function() {
+  static int count = 0;  // count 在这里初始化一次，且之后不会被重置。
+  count++;
+  printf("%d\n", count);
+}
+
 int main() {
+  print();
   alignas(S) unsigned char storage[sizeof(S)];
   S* ptr =
       std::construct_at(reinterpret_cast<S*>(storage), 42, 2.71828f, 3.1415);
   ptr->print();
 
   std::destroy_at(ptr);
+
+  function();
+  function();
 
   // test inline
   printf("main 里看到的 twice = %p!\n", twice);

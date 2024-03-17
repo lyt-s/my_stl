@@ -1,10 +1,10 @@
 #include "foo.h"
 
-#include <cstdint>
-#include <cstdio>
 #include <iostream>
 
-inline int32_t i = 8;
+// #include "stdint.h"
+
+inline int32_t i;
 struct S {
   int x;
   float y;
