@@ -7,10 +7,10 @@ inline int32_t i = 3;
 
 // int32_t i;
 
-#include <a.h>
-
 #include <iostream>
 #include <memory>
+
+#include "a.h"
 
 struct S {
   int x;
