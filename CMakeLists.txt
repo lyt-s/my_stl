@@ -13,9 +13,6 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 project(stl LANGUAGES CXX)
 
-
-
-
 add_subdirectory(cpplifetimetest)
 add_subdirectory(c++20)
 add_subdirectory(c++11)
