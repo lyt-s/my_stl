@@ -17,6 +17,7 @@ struct MyStruct {
 };
 
 int main() {
+  std::shared_ptr<int> q;
   std::vector<int> vec{1, 2, 3, 4, 5};
   std::allocator<int> alloc;
   auto print_list = [&](std::vector<int> const& vec) {

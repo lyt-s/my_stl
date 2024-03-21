@@ -1,5 +1,6 @@
-#include "Vector.hpp"
+#include <iostream>
 
+#include "Vector.hpp"
 int main() {
   // 实现 operator[] size()
   auto print_list = [&](Vector<int> &vector) {

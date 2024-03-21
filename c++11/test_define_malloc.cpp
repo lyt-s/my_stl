@@ -1,6 +1,7 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include <unistd.h>
+
+#include "stdlib.h"
 
 // 不能放在这里  放在这里  会对malloc_hook 和 free_hook
 // 内部实际调用的也替换，就形成的递归调用了 并且无法规避 #define malloc(size)

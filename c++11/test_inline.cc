@@ -34,6 +34,14 @@ void function() {
 
 int main() {
   print();
+  int z = 0;
+  auto i = z;
+  int&& a = 3;
+  int* p = &a;
+  printf("p : %p\n", p);
+  auto&& b = 6;
+  int* p2 = &b;
+  printf("p2 : %p\n", p2);
   alignas(S) unsigned char storage[sizeof(S)];
   S* ptr =
       std::construct_at(reinterpret_cast<S*>(storage), 42, 2.71828f, 3.1415);

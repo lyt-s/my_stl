@@ -24,9 +24,7 @@ std::vector<std::vector<int>> merge(std::vector<std::vector<int>> &inputs) {
 int main() {
   int n, x, y;
   vector<vector<int>> inputs;
-  std::cin >> n;
-  while (n--) {
-    cin >> x >> y;
+  while (cin >> x >> y) {
     // cout << x << " " << y << endl;
     inputs.push_back({x, y});
   }

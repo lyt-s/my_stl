@@ -9,4 +9,6 @@ add_executable(test_inline foo.cc test_inline.cc)
 
 target_include_directories(test_inline PUBLIC  ${CMAKE_SOURCE_DIR}/c++17)
 
-# add_executable(test_define_malloc test_define_malloc.cpp)
+# add_executable(test_include test_include.cpp)
+
+# target_include_directories(test_include PUBLIC  ${CMAKE_SOURCE_DIR}/c++17)
