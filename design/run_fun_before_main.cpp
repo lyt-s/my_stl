@@ -22,6 +22,7 @@ int b = []() {
   return 0;
 }();
 
+// void test1() { cout << "before main 5" << endl; }
 int main(int argc, char** argv) {
   cout << "main function" << endl;
   return 0;
