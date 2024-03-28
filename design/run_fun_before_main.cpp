@@ -16,13 +16,14 @@ int a = []() {
   cout << "before main 3" << endl;
   return 0;
 }();
-
-int b = []() {
+auto print = []() {
   cout << "before main 4" << endl;
   return 0;
 }();
+// 这里后面加上()是为了立即执行。
 
 int main(int argc, char** argv) {
   cout << "main function" << endl;
+
   return 0;
 }

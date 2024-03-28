@@ -1,36 +1,39 @@
 #include <iostream>
+#include <ostream>
+#include <vector>
 
-int partition(int arr[], int low, int high) {
-  int pivot = arr[low];
-  int i = low;
-  int j = high;
+int partition(std::vector<int>& vec, int left, int right) {
+  int privot = vec[left];
+  int i = left;
+  int j = right;
   while (i < j) {
-    while (i < j && arr[j] >= pivot) {
+    while (i < j && vec[j] >= privot) {
       j--;
     }
-    arr[i] = arr[j];
-    while (i < j && arr[i] <= pivot) {
+    vec[i] = vec[j];
+    while (i < j && vec[i] <= privot) {
       i++;
     }
-    arr[j] = arr[i];
+    vec[j] = vec[i];
   }
-  arr[i] = pivot;
+  vec[i] = privot;
   return i;
 }
 
-void quickSort(int arr[], int low, int high) {
-  if (low < high) {
-    int pivotIndex = partition(arr, low, high);
-    quickSort(arr, low, pivotIndex - 1);
-    quickSort(arr, pivotIndex + 1, high);
+void quickSort(std::vector<int>& vec, int left, int right) {
+  if (left < right) {
+    int index = partition(vec, left, right);
+    quickSort(vec, left, index - 1);
+    quickSort(vec, index + 1, right);
   }
 }
 
 int main() {
-  int arr[] = {2, 3, 1, 8, 7, 5, 4, 9};
-  int len = sizeof(arr) / sizeof(arr[0]);
-  quickSort(arr, 0, len);
-  for (auto i : arr) {
+  std::vector<int> vec{1, 4, 3, 2, 7, 5, 6, 8, 0, 9};
+  quickSort(vec, 0, vec.size() - 1);
+
+  for (auto i : vec) {
     std::cout << i << " ";
   }
+  std::cout << std::endl;
 }
