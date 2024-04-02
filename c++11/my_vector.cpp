@@ -1,6 +1,8 @@
 
 
+#include <climits>
 #include <cstddef>
+#include <deque>
 #include <iostream>
 #include <memory>
 class MyVector {
@@ -71,7 +73,7 @@ class MyVector {
     return *this;
   }
 
-  void reverse(size_t n) {
+  void reserve(size_t n) {
     if (n <= m_capacity) {
       return;
     }
@@ -87,12 +89,25 @@ class MyVector {
     for (int i = 0; i < m_size; i++) {
       std::construct_at(&m_date[i], old_data[i]);
     }
-    delete old_data;
+    delete[] old_data;
   }
 
+  void resize(size_t n) {
+    if (n < m_size) {
+      for (size_t i = n; i < m_size; i++) {
+        std::destroy_at(&m_date[i]);
+      }
+    } else if (n > m_size) {
+      reserve(n);
+      for (int i = m_size; i < n; i++) {
+        std::construct_at(&m_date[i], 0);
+      }
+    }
+    m_size = n;
+  }
   void push_back(int val) {
     if (m_size + 1 > m_capacity) {
-      reverse(m_size + 1);
+      reserve(m_size + 1);
     }
     std::construct_at(&m_date[m_size], val);
     m_size++;
@@ -106,6 +121,67 @@ class MyVector {
     m_size--;
   }
 
+  int* begin() { return m_date; }
+  int* end() { return m_date + m_size; }
+
+  int* erase(int const* it) {
+    size_t i = it - m_date;
+    for (size_t j = i + 1; j < m_size; j++) {
+      m_date[j - 1] = std::move(m_date[j]);
+    }
+    m_size--;
+    std::destroy_at(&m_date[m_size]);
+    return const_cast<int*>(it);
+  }
+
+  // 删除成功多少值
+  int* erase(int const* first, int const* last) {
+    size_t diff = last - first;
+    size_t iend = last - m_date;
+    for (size_t j = iend; j < m_size; j++) {
+      m_date[j - diff] = std::move(m_date[j]);
+    }
+    m_size -= diff;
+    for (int i = m_size; i < m_size + diff; i++) {
+      std::destroy_at(&m_date[i]);
+    }
+    return const_cast<int*>(first);
+  }
+
+  void clear() {
+    for (int i = 0; i < m_size; i++) {
+      std::destroy_at(&m_date[i]);
+    }
+    m_size = 0;
+  }
+
+  int* insert(int const* it, int value) {
+    int j = it - m_date;
+    reserve(m_size + 1);
+
+    for (size_t i = m_size; i != j; i++) {
+      std::construct_at(&m_date[i], std::move(i - 1));
+      std::destroy_at(&m_date[i - 1]);
+    }
+    m_size += 1;
+    // 插入数据
+    std::construct_at(&m_date[j], value);
+    return m_date + j;
+  }
+
+  int* insert(int const* it, size_t n, int val) {
+    size_t j = it - m_date;
+    reserve(m_size + n);
+    for (size_t i = m_size; i != j; i++) {
+      std::construct_at(&m_date[i + n - 1], std::move(m_date[i - 1]));
+      std::destroy_at(&m_date[i - 1]);
+    }
+    m_size += n;
+    for (size_t i = j; i != j + n; i++) {
+      std::construct_at(&m_date[i], val);
+    }
+    return m_date + j;
+  }
   // 添加[]
   int& operator[](int index) noexcept { return m_date[index]; }
   int const& operator[](int index) const noexcept { return m_date[index]; }
@@ -116,7 +192,10 @@ int main() {
   MyVector vec;
   vec.push_back(1);
   vec.push_back(2);
-
+  vec.push_back(5);
+  vec.push_back(7);
+  vec.erase(vec.begin());
+  vec.pop_back();
   for (int i = 0; i < vec.size(); i++) {
     std::cout << vec[i] << std::endl;
   }
