@@ -2,29 +2,29 @@
 #include <ostream>
 #include <vector>
 
-int partition(std::vector<int>& vec, int left, int right) {
-  int privot = vec[left];
-  int i = left;
-  int j = right;
+int partition(std::vector<int>& arr, int low, int high) {
+  int pivot = arr[low];
+  int i = low;
+  int j = high;
   while (i < j) {
-    while (i < j && vec[j] >= privot) {
+    while (i < j && arr[j] >= pivot) {
       j--;
     }
-    vec[i] = vec[j];
-    while (i < j && vec[i] <= privot) {
+    arr[i] = arr[j];
+    while (i < j && arr[i] <= pivot) {
       i++;
     }
-    vec[j] = vec[i];
+    arr[j] = arr[i];
   }
-  vec[i] = privot;
+  arr[i] = pivot;
   return i;
 }
 
-void quickSort(std::vector<int>& vec, int left, int right) {
-  if (left < right) {
-    int index = partition(vec, left, right);
-    quickSort(vec, left, index - 1);
-    quickSort(vec, index + 1, right);
+void quickSort(std::vector<int>& arr, int low, int high) {
+  if (low < high) {
+    int pivotIndex = partition(arr, low, high);
+    quickSort(arr, low, pivotIndex - 1);
+    quickSort(arr, pivotIndex + 1, high);
   }
 }
 
