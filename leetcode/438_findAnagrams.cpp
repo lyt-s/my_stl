@@ -15,25 +15,25 @@ std::vector<int> findAnagrams(std::string s, std::string p) {
     char c = s[right];
     right++;
     window[c]++;
-
     if (need.count(c)) {
       if (window[c] == need[c]) {
         valid++;
       }
     }
 
-    if (right - left == p.size()) {
+    while ((right - left) == p.size()) {
       if (valid == need.size()) {
         result.push_back(left);
       }
+
       char d = s[left];
       left++;
       if (need.count(d)) {
         if (window[d] == need[d]) {
           valid--;
         }
-        window[d]--;
       }
+      window[d]--;
     }
   }
   return result;
