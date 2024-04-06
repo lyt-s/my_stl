@@ -38,7 +38,6 @@ class SharedPtr {
         delete m_count;
       }
     }
-
     m_ptr = ptr.m_ptr;
     m_count = ptr.m_count;
     ++(*m_count);

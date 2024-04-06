@@ -1,6 +1,6 @@
 
 #include <condition_variable>
-#include <format>
+// #include <format>
 #include <iostream>
 #include <memory>
 #include <mutex>
@@ -40,17 +40,17 @@ void producer() {
 
 void consumer(int id) {
   while (int gift = pop_gift()) {
-    std::cout << std::format("小朋友 { } 得到了 {}", id, gift);
+    // std::cout << std::format("小朋友 { } 得到了 {}", id, gift);
   }
 }
 
 int main() {
-  std::jthread producer1_thread(producer());
+  std::jthread producer1_thread(producer);
   std::vector<std::jthread> consumer_threads;
   for (int i = 0; i < 32; i++) {
     std::jthread consumer_thread(consumer, i);
     consumer_threads.push_back(std::move(consumer_thread));
   }
-
+  producer1_thread.detach();
   return 0;
 }
