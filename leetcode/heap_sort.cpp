@@ -1,40 +1,58 @@
 #include <iostream>
+#include <utility>
 #include <vector>
 
-void adjustHeap(std::vector<int>& arr, int i, int n) {
-  int temp = arr[i];
-  for (int k = 2 * i + 1; k < n; k = 2 * k + 1) {
-    // 找到左右子节点中较大的一个
-    if (k + 1 < n && arr[k] < arr[k + 1]) {
-      k++;
-    }
-
-    // 如果子节点大于父节点，则交换它们
-    if (arr[k] > temp) {
-      arr[i] = arr[k];
-      i = k;
-    } else {
-      break;
-    }
+// 维护堆的性质
+void heapify(std::vector<int>& arr, int i, int n) {
+  int largest = i;
+  int lson = i * 2 + 1;
+  int rson = i * 2 + 2;
+  if (lson < n && arr[largest] < arr[lson]) {
+    largest = lson;
   }
-
-  arr[i] = temp;
+  if (rson < n && arr[largest] < arr[rson]) {
+    largest = rson;
+  }
+  if (largest != i) {
+    std::swap(arr[largest], arr[i]);
+    heapify(arr, largest, n);
+  }
 }
 
+// 维护堆的性质
+void heapify_low(std::vector<int>& arr, int i, int n) {
+  int largest = i;
+  int lson = i * 2 + 1;
+  int rson = i * 2 + 2;
+  if (lson < n && arr[largest] > arr[lson]) {
+    largest = lson;
+  }
+  if (rson < n && arr[largest] > arr[rson]) {
+    largest = rson;
+  }
+  if (largest != i) {
+    std::swap(arr[largest], arr[i]);
+    heapify(arr, largest, n);
+  }
+}
+// 下标位i的节点的父节点，下标位 (i-1)/2
+// i * 2 + 1
+// i * 2 + 2
 void heapSort(std::vector<int>& arr) {
   int n = arr.size();
 
-  // 构建大顶堆
+  // 构建大顶堆, i的父节点, 下标为 i-1/2
+  // (n -1 -1)/2
   for (int i = n / 2 - 1; i >= 0; i--) {
-    adjustHeap(arr, i, n);
+    heapify_low(arr, i, n);
   }
 
   // 排序
   for (int i = n - 1; i >= 0; i--) {
     std::swap(arr[0], arr[i]);
-
     // 调整堆
-    adjustHeap(arr, 0, i);
+    // 现在维护的堆的个数为 n-1
+    heapify_low(arr, 0, i);
   }
 }
 
