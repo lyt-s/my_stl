@@ -16,7 +16,7 @@ void merge(int arr[], int tempArr[], int left, int mid, int right) {
   int pos = left;
   // 合并
   while (l_pos <= mid && r_pos <= right) {
-    if (arr[l_pos] < arr[r_pos]) {  // 左半区第一个剩余元素最小
+    if (arr[l_pos] < arr[r_pos]) {  // 左半区第一个剩余元素最小 稳定的
       tempArr[pos++] = arr[l_pos++];
     } else {
       tempArr[pos++] = arr[r_pos++];
@@ -36,6 +36,7 @@ void merge(int arr[], int tempArr[], int left, int mid, int right) {
     left++;
   }
 }
+
 // 归并排序
 
 void msort(int arr[], int tempArr[], int left, int right) {
