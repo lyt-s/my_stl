@@ -1,33 +1,74 @@
+#include <algorithm>
 #include <iostream>
+#include <stack>
 #include <string>
 #include <vector>
 
-using namespace std;
+std::vector<std::string> processCards(const std::vector<std::string>& cards) {
+  std::stack<std::string> st;
+  std::vector<std::string> processed;
 
-int main() {
-  // 读取输入字符串
-  string S;
-  cin >> S;
-  int n = S.length();
-
-  // 使用一个常量来标识模数 1e9 + 7
-  const int MOD = 1000000007;
-
-  // 创建一个动态数组dp
-  vector<long long> dp(n + 1, 0);
-  // 初始化动态数组的第一个值
-  dp[0] = 1;
-
-  // 遍历字符串进行动态规划
-  for (int i = 1; i <= n; ++i) {
-    dp[i] = dp[i - 1];
-    if (S[i - 1] == '1' && i > 1 && S[i - 2] == '0') {
-      dp[i] += dp[i - 2];
+  for (const auto& card : cards) {
+    if (st.size() < 2) {
+      st.push(card);
+    } else {
+      if (card == st.top()) {
+        std::string topCard = st.top();
+        st.pop();
+        if (topCard == st.top()) {
+          while (!st.empty() && st.top() == topCard) {
+            st.pop();
+          }
+          if (!st.empty() && st.top() == card) {
+            continue;
+          }
+        } else {
+          st.push(topCard);
+          st.push(card);
+        }
+      } else {
+        st.push(card);
+      }
     }
-    dp[i] %= MOD;  // 对MOD取模
   }
 
-  // 输出结果，构造的新字符串个数
-  cout << dp[n] << endl;
+  // Transfer the stack to the vector in the right order.
+  while (!st.empty()) {
+    processed.push_back(st.top());
+    st.pop();
+  }
+
+  std::reverse(processed.begin(), processed.end());
+  return processed;
+}
+
+int main() {
+  int n;
+  std::cin >> n;
+  std::vector<std::string> cards(n);
+
+  for (int i = 0; i < n; ++i) {
+    std::cin >> cards[i];
+  }
+
+  std::vector<std::string> current = cards;
+  std::vector<std::string> next = processCards(current);
+  while (next.size() != current.size()) {
+    current = next;
+    next = processCards(current);
+  }
+
+  if (current.empty()) {
+    std::cout << "0" << std::endl;
+  } else {
+    for (size_t i = 0; i < current.size(); ++i) {
+      std::cout << current[i];
+      if (i < current.size() - 1) {
+        std::cout << " ";
+      }
+    }
+    std::cout << std::endl;
+  }
+
   return 0;
 }

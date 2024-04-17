@@ -1,63 +1,57 @@
-#include <iostream>
-#include <vector>
-
+#include <bits/stdc++.h>
 using namespace std;
-void setZeroes(vector<vector<int>>& matrix) {
-  int rows = matrix.size();
-  int cols = matrix[0].size();
-  int flagx = false, flagy = false;
-  for (int i = 0; i < rows; ++i) {
-    if (matrix[i][0] == 0) {
-      flagy = true;
-      // break;
-    }
-  }
-  for (int j = 0; j < cols; j++) {
-    if (matrix[0][j] == 0) {
-      flagx = true;
-      // break;
-    }
-  }
 
-  for (int i = 1; i < rows; ++i) {
-    for (int j = 1; j < cols; ++j) {
-      if (!matrix[i][j]) {
-        matrix[i][0] = 0;
-        matrix[0][j] = 0;
-      }
-    }
-  }
+unordered_map<string, pair<int, string>> trees;  // 边
+unordered_map<string, int> total_problems;       // 每颗树的问题数量
 
-  for (int i = 1; i < rows; ++i) {
-    for (int j = 1; j < cols; ++j) {
-      if (matrix[i][0] == 0 || matrix[0][j] == 0) {
-        matrix[i][j] = 0;
-      }
-    }
+string find_root(string node) {
+  if (trees[node].second == node) {
+    return node;
+  } else {
+    return trees[node].second = find_root(trees[node].second);
   }
+}
 
-  if (flagx) {
-    for (int i = 0; i < rows; ++i) {
-      matrix[0][i] = 0;
+void process_tree() {
+  for (auto &edge : trees) {
+    string root = edge.second.second;
+    if (total_problems.find(root) != total_problems.end()) {
+      total_problems[root] += edge.second.first;
+      continue;
     }
-  }
-  if (flagy) {
-    for (int j = 0; j < cols; ++j) {
-      matrix[j][0] = 0;
-      cout << matrix[0][j];
-    }
+    edge.second.second = find_root(edge.second.second);
+    total_problems[edge.second.second] += edge.second.first;
   }
 }
 
 int main() {
-  vector<vector<int>> matrix(1, {1, 0, 3});
-  setZeroes(matrix);
-
-  for (auto nums : matrix) {
-    for (auto i : nums) {
-      cout << i << " ";
+  int M, N;
+  cin >> M >> N;
+  for (int i = 0; i < N; ++i) {
+    string Ai, Bi;
+    int Ci, Di;
+    cin >> Ai >> Bi >> Ci >> Di;
+    int problem = 0;
+    if (Ci == 0) {
+      problem += 5 * Di;
+    } else {
+      problem += 2 * Di;
     }
-    cout << endl;
+    trees[Ai].first += problem;
+    if (Bi == "*") {
+      trees[Ai].second = Ai;
+      total_problems.insert({Ai, 0});
+    } else {
+      trees[Ai].second = Bi;
+    }
   }
+  process_tree();
+  int res = 0;
+  for (auto &problem : total_problems) {
+    if (problem.second > M) {
+      res++;
+    }
+  }
+  cout << res << endl;
   return 0;
 }
