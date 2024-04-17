@@ -53,6 +53,7 @@ int main() {
 
   std::vector<std::string> current = cards;
   std::vector<std::string> next = processCards(current);
+
   while (next.size() != current.size()) {
     current = next;
     next = processCards(current);
