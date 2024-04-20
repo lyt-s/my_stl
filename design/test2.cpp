@@ -1,57 +1,50 @@
-#include <bits/stdc++.h>
+#include <iostream>
+#include <string>
 using namespace std;
 
-unordered_map<string, pair<int, string>> trees;  // 边
-unordered_map<string, int> total_problems;       // 每颗树的问题数量
-
-string find_root(string node) {
-  if (trees[node].second == node) {
-    return node;
-  } else {
-    return trees[node].second = find_root(trees[node].second);
+// 检查是否可通过最多k次操作将所有子串长度缩短至mid及以下
+bool isValid(const string& s, int k, int mid) {
+  int count = 0, ops = 0;
+  for (char c : s) {
+    if (c == '1') {
+      if (++count > mid) {
+        count = 1;
+        ops++;
+      }
+    } else {
+      if (count > mid) {
+        ops++;
+      }
+      count = 0;
+    }
   }
+  // 增加对尾部处理
+  if (count > mid) {
+    ops++;
+  }
+  return ops <= k;
 }
 
-void process_tree() {
-  for (auto &edge : trees) {
-    string root = edge.second.second;
-    if (total_problems.find(root) != total_problems.end()) {
-      total_problems[root] += edge.second.first;
-      continue;
+int minMaxLen(string s, int k) {
+  int left = 1, right = s.size();  // 重新设定搜索范围
+  int mid, ans = right;
+
+  while (left <= right) {
+    mid = left + (right - left) / 2;
+    if (isValid(s, k, mid)) {
+      ans = mid;
+      right = mid - 1;
+    } else {
+      left = mid + 1;
     }
-    edge.second.second = find_root(edge.second.second);
-    total_problems[edge.second.second] += edge.second.first;
   }
+
+  return ans;
 }
 
 int main() {
-  int M, N;
-  cin >> M >> N;
-  for (int i = 0; i < N; ++i) {
-    string Ai, Bi;
-    int Ci, Di;
-    cin >> Ai >> Bi >> Ci >> Di;
-    int problem = 0;
-    if (Ci == 0) {
-      problem += 5 * Di;
-    } else {
-      problem += 2 * Di;
-    }
-    trees[Ai].first += problem;
-    if (Bi == "*") {
-      trees[Ai].second = Ai;
-      total_problems.insert({Ai, 0});
-    } else {
-      trees[Ai].second = Bi;
-    }
-  }
-  process_tree();
-  int res = 0;
-  for (auto &problem : total_problems) {
-    if (problem.second > M) {
-      res++;
-    }
-  }
-  cout << res << endl;
+  string s = "10111110110";
+  int k = 1;
+  cout << minMaxLen(s, k) << endl;
   return 0;
 }
