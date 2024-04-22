@@ -1,50 +1,64 @@
 #include <iostream>
-#include <string>
+#include <unordered_map>
+#include <vector>
+
 using namespace std;
 
-// 检查是否可通过最多k次操作将所有子串长度缩短至mid及以下
-bool isValid(const string& s, int k, int mid) {
-  int count = 0, ops = 0;
-  for (char c : s) {
-    if (c == '1') {
-      if (++count > mid) {
-        count = 1;
-        ops++;
-      }
-    } else {
-      if (count > mid) {
-        ops++;
-      }
-      count = 0;
+// Helper function to calculate all possible subset sums and their count modulo
+// m.
+unordered_map<int, int> subsetSums(vector<int>& nums, int m) {
+  unordered_map<int, int> sums = {{0, 1}};  // include empty subset
+  for (int num : nums) {
+    unordered_map<int, int> newSums(sums);
+    for (auto& sum : sums) {
+      int newSum = (sum.first + num) % m;
+      newSums[newSum] = newSums[newSum] + sum.second;
     }
+    sums.swap(newSums);
   }
-  // 增加对尾部处理
-  if (count > mid) {
-    ops++;
-  }
-  return ops <= k;
-}
-
-int minMaxLen(string s, int k) {
-  int left = 1, right = s.size();  // 重新设定搜索范围
-  int mid, ans = right;
-
-  while (left <= right) {
-    mid = left + (right - left) / 2;
-    if (isValid(s, k, mid)) {
-      ans = mid;
-      right = mid - 1;
-    } else {
-      left = mid + 1;
-    }
-  }
-
-  return ans;
+  return sums;
 }
 
 int main() {
-  string s = "10111110110";
-  int k = 1;
-  cout << minMaxLen(s, k) << endl;
+  int n, A, B;
+  cin >> n >> A >> B;
+  vector<int> arr(n);
+  for (int i = 0; i < n; ++i) {
+    cin >> arr[i];
+  }
+
+  vector<int> firstHalf(arr.begin(), arr.begin() + n / 2);
+  vector<int> secondHalf(arr.begin() + n / 2, arr.end());
+
+  // Calculate subset sums for both halves modulo A and B
+  unordered_map<int, int> firstHalfSumsA = subsetSums(firstHalf, A);
+  unordered_map<int, int> secondHalfSumsB = subsetSums(secondHalf, B);
+
+  // Count the number of compatible pairs of subset sums
+  long long count = 0;
+  for (auto& fa : firstHalfSumsA) {
+    count += (long long)fa.second * secondHalfSumsB[(B - fa.first % B) % B];
+  }
+
+  unordered_map<int, int> firstHalfSumsB = subsetSums(firstHalf, B);
+  unordered_map<int, int> secondHalfSumsA = subsetSums(secondHalf, A);
+
+  for (auto& sa : secondHalfSumsA) {
+    count += (long long)sa.second * firstHalfSumsB[(A - sa.first % A) % A];
+  }
+
+  // Subtract the cases when all are painted in one color since they are counted
+  // twice
+  count -= firstHalfSumsA[0] * secondHalfSumsA[0];
+  count -= firstHalfSumsB[0] * secondHalfSumsB[0];
+
+  // Finally, add the cases when all are painted in one color
+  count += firstHalfSumsA[0] + secondHalfSumsA[0] -
+           2;  // All black - subtracting extra empty case
+  count += firstHalfSumsB[0] + secondHalfSumsB[0] -
+           2;  // All white - subtracting extra empty case
+
+  cout << count << endl;
+
   return 0;
 }
