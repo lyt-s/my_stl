@@ -164,7 +164,56 @@ class Vector {
   int& operator[](int index) { return m_data[index]; }
   int size() const { return m_size; }
 };
+
+int partition(vector<int>& arr, int left, int right) {
+  int privot = arr[left];
+  while (left < right) {
+    while (left < right && arr[right] >= privot) {
+      right--;
+    }
+    arr[left] = arr[right];
+    while (left < right && arr[left] <= privot) {
+      left++;
+    }
+    arr[right] = arr[left];
+  }
+  arr[left] = privot;
+  return left;
+}
+
+void quickSort(vector<int>& nums, int left, int right) {
+  if (left < right) {
+    int mid = partition(nums, left, right);
+    quickSort(nums, left, mid - 1);
+    quickSort(nums, mid + 1, right);
+  }
+}
+
+void heapjustfy(vector<int>& arr, int i, int n) {
+  int largest = i;
+  int lson = i * 2 + 1;
+  int rson = i * 2 + 2;
+  if (arr[largest] < arr[lson]) {
+    largest = lson;
+  }
+  if (arr[largest] < arr[rson]) {
+    largest = rson;
+  }
+  if (largest != i) {
+    swap(arr[largest], arr[i]);
+    heapjustfy(arr, largest, n);
+  }
+}
+
+void heapSort(vector<int>& arr) {}
+
 int main() {
+  vector<int> nums{1, 3, 5, 4, 2, 9, 7, 8, 6};
+  quickSort(nums, 0, nums.size() - 1);
+  for (auto i : nums) {
+    cout << i << " ";
+  }
+  cout << endl;
   Vector vec;
   vec.push_back(1);
   vec.push_back(2);
@@ -173,17 +222,17 @@ int main() {
   for (int i = 0; i < vec.size(); i++) {
     cout << vec[i] << " ";
   }
-  ThreadPool pool(4);
-  for (int i = 0; i < 8; ++i) {
-    pool.enqueue([i] {
-      std::cout << "Task " << i << " is running in thread "
-                << std::this_thread::get_id() << std::endl;
-      std::this_thread::sleep_for(std::chrono::seconds(1));
-      std::cout << "Task " << i << " is done" << std::endl;
-    });
-  }
-  return 0;
-  SingleInstance* ins = SingleInstance::getInstance();
+  // ThreadPool pool(4);
+  // for (int i = 0; i < 8; ++i) {
+  //   pool.enqueue([i] {
+  //     std::cout << "Task " << i << " is running in thread "
+  //               << std::this_thread::get_id() << std::endl;
+  //     std::this_thread::sleep_for(std::chrono::seconds(1));
+  //     std::cout << "Task " << i << " is done" << std::endl;
+  //   });
+  // }
+  // return 0;
+  // SingleInstance* ins = SingleInstance::getInstance();
 
   return 0;
 }
