@@ -1,35 +1,33 @@
 #include <iostream>
+#include <vector>
 
-int partition(int arr[], int low, int high) {
-  int pivot = arr[low];
-  int i = low;
-  int j = high;
-  while (i < j) {
-    while (i < j && arr[j] >= pivot) {
-      j--;
+int partition(std::vector<int>& arr, int left, int right) {
+  int privot = arr[left];
+  while (left < right) {
+    while (left < right && arr[right] >= privot) {
+      right--;
     }
-    arr[i] = arr[j];
-    while (i < j && arr[i] <= pivot) {
-      i++;
+    arr[left] = arr[right];
+    while (left < right && arr[left] <= privot) {
+      left++;
     }
-    arr[j] = arr[i];
+    arr[right] = arr[left];
   }
-  arr[i] = pivot;
-  return i;
+  arr[left] = privot;
+  return left;
 }
 
-void quickSort(int arr[], int low, int high) {
-  if (low < high) {
-    int pivotIndex = partition(arr, low, high);
-    quickSort(arr, low, pivotIndex - 1);
-    quickSort(arr, pivotIndex + 1, high);
+void quickSort(std::vector<int>& arr, int left, int right) {
+  if (left < right) {
+    int mid = partition(arr, left, right);
+    quickSort(arr, left, mid - 1);
+    quickSort(arr, mid + 1, right);
   }
 }
 
 int main() {
-  int arr[] = {3, 6, 7, 8, 9, 1, 4, 5};
-  int len = sizeof(arr) / sizeof(arr[0]);
-  quickSort(arr, 0, len - 1);
+  std::vector<int> arr = {3, 6, 7, 8, 9, 1, 4, 5};
+  quickSort(arr, 0, arr.size() - 1);
   for (auto num : arr) {
     std::cout << num << " ";
   }
