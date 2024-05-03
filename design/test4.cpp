@@ -20,13 +20,10 @@ class SingleInstance {
 
   ~SingleInstance() {}
 
-  static std::mutex m_mutex;
-
  private:
   SingleInstance() { cout << " single instance created" << endl; }
   SingleInstance(const SingleInstance& other) {}
   SingleInstance& operator=(const SingleInstance& other) { return *this; }
-  static SingleInstance* ins;
 };
 
 class ThreadPool {
@@ -78,9 +75,6 @@ class ThreadPool {
     m_condition.notify_one();
   }
 };
-
-// SingleInstance* SingleInstance::ins = nullptr;
-std::mutex SingleInstance::m_mutex;
 
 class Vector {
  private:
