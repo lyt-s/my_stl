@@ -2,6 +2,8 @@
 #include <string>
 #include <vector>
 
+static int n = 0;
+
 int main() {
   std::vector<char> characters;
 
