@@ -36,7 +36,7 @@ void fun_B(int& x) { printf("左值 x: %d\n", x); }
 void fun(int&& x) {
   // printf("右值  x: %d\n", x);
   // fun_B(x);
-  fun_B(std::forward<int&&>(std::move(x)));
+  fun_B(std::forward<int&>(x));
 }
 void fun(int& x) { printf("左值 x: %d\n", x); }
 
