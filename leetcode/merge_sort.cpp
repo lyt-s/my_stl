@@ -52,7 +52,6 @@ void msort(int arr[], int tempArr[], int left, int right) {
     merge(arr, tempArr, left, mid, right);
   }
 }
-
 void merge_sort(int arr[], int n) {
   // 分配一个辅助的数组
   int *tempArr = (int *)malloc(n * sizeof(int));

@@ -193,10 +193,10 @@ void heapjustfy(vector<int>& arr, int i, int n) {
   int largest = i;
   int lson = i * 2 + 1;
   int rson = i * 2 + 2;
-  if (arr[largest] < arr[lson]) {
+  if (lson < n && arr[largest] < arr[lson]) {
     largest = lson;
   }
-  if (arr[largest] < arr[rson]) {
+  if (rson < n && arr[largest] < arr[rson]) {
     largest = rson;
   }
   if (largest != i) {
@@ -205,11 +205,65 @@ void heapjustfy(vector<int>& arr, int i, int n) {
   }
 }
 
-void heapSort(vector<int>& arr) {}
+void heapSort(vector<int>& arr) {
+  int n = arr.size();
+  for (int i = n / 2 - 1; i >= 0; i--) {
+    heapjustfy(arr, i, n);
+  }
+
+  // sort
+  for (int i = n - 1; i >= 0; i--) {
+    swap(arr[0], arr[i]);
+    heapjustfy(arr, 0, i);
+  }
+}
+
+void merge(vector<int>& arr, vector<int>& tempArr, int left, int mid,
+           int right) {
+  int l_pos = left;
+  int r_pos = mid + 1;
+  int pos = left;
+
+  while (l_pos <= mid && r_pos <= right) {
+    if (arr[l_pos] < arr[r_pos]) {
+      tempArr[pos++] = arr[l_pos++];
+    } else {
+      tempArr[pos++] = arr[r_pos++];
+    }
+  }
+
+  while (l_pos <= mid) {
+    tempArr[pos++] = arr[l_pos++];
+  }
+  while (r_pos <= right) {
+    tempArr[pos++] = arr[r_pos++];
+  }
+  while (left <= right) {
+    arr[left] = tempArr[left];
+    left++;
+  }
+}
+
+void msort(vector<int>& arr, vector<int>& tempArr, int left, int right) {
+  if (left < right) {
+    int mid = left + (right - left) / 2;
+    msort(arr, tempArr, left, mid);
+    msort(arr, tempArr, mid + 1, right);
+    merge(arr, tempArr, left, mid, right);
+  }
+}
+
+void mergeSort(vector<int>& arr) {
+  int n = arr.size();
+  vector<int> tempArr(n);
+  msort(arr, tempArr, 0, n - 1);
+}
 
 int main() {
   vector<int> nums{1, 3, 5, 4, 2, 9, 7, 8, 6};
-  quickSort(nums, 0, nums.size() - 1);
+  // quickSort(nums, 0, nums.size() - 1);
+  // heapSort(nums);
+  mergeSort(nums);
   for (auto i : nums) {
     cout << i << " ";
   }
