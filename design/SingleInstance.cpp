@@ -2,6 +2,7 @@
 
 #include <pthread.h>
 
+#include <cstddef>
 #include <iostream>
 #include <mutex>
 #include <ostream>
@@ -66,6 +67,33 @@ class SingleInstaceLazy {
 std::once_flag SingleInstaceLazy::once;
 SingleInstaceLazy* SingleInstaceLazy::ins = nullptr;
 pthread_mutex_t SingleInstaceLazy::mutex;
+
+class SinglePointer {
+ private:
+  SinglePointer() {}
+  SinglePointer(const SinglePointer& other) = delete;
+  SinglePointer& operator=(const SinglePointer& other) = delete;
+  static SinglePointer* m_single;
+  static std::mutex m_mutex;
+
+ public:
+  static SinglePointer* getInstance() {
+    if (m_single != nullptr) {
+      return m_single;
+    }
+    m_mutex.lock();
+    if (m_single != nullptr) {
+      m_mutex.unlock();
+      return m_single;
+    }
+    m_single = new SinglePointer();
+    m_mutex.unlock();
+    return m_single;
+  };
+};
+
+SinglePointer* SinglePointer::m_single = nullptr;
+std::mutex SinglePointer::m_mutex;
 
 void print_error() { SingleInstaceLazy::GetInstance()->PrintLog("error"); }
 

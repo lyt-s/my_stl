@@ -1,5 +1,6 @@
 #include <iostream>
 #include <iterator>
+#include <ostream>
 #include <string>
 class Base {
  public:
@@ -54,6 +55,7 @@ int main() {
   int y = hammingWeight(x);
 
   std::cout << y << std::endl;
+  // std::cout << sizeof(long) << std::endl;
   // CrazyInt b = 55;
   // print_class(999);  // prints 999
   // print_class(b);    // prints 55
