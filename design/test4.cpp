@@ -253,7 +253,12 @@ void mergeSort(vector<int>& arr) {
   msort(arr, tempArr, 0, n - 1);
 }
 
+class Test {};
+
 int main() {
+  // Test* test = new Test();
+  Test test;
+  // Vector* res = new Vector();
   vector<int> nums{1, 3, 5, 4, 2, 9, 7, 8, 6};
   // quickSort(nums, 0, nums.size() - 1);
   // heapSort(nums);

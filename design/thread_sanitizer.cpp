@@ -5,26 +5,27 @@
 #include <cstddef>
 #include <cstdlib>
 #include <iostream>
-int num = 0;
+// int num = 0;
 
-void *fun(void *arg) {
-  for (int i = 0; i < 10000; i++) {
-    num++;
-  }
-}
+// void *fun(void *arg) {
+//   for (int i = 0; i < 10000; i++) {
+//     num++;
+//   }
+
+// }
 
 int main() {
   // std::thread t1(fun);
   // std::thread t2(fun);
 
-  pthread_t tid;
-  pthread_create(&tid, NULL, fun, "线程！！！！");
+  // pthread_t tid;
+  // pthread_create(&tid, NULL, fun, "线程！！！！");
 
-  int *ptr = (int *)malloc(sizeof(int));
+  // int *ptr = (int *)malloc(sizeof(int));
 
-  *ptr = 1;
-  free(ptr);
-  *ptr = 1;
+  // *ptr = 1;
+  // free(ptr);
+  // *ptr = 1;
 
   return 0;
 }
