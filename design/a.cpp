@@ -1,3 +1,4 @@
+#include <cassert>
 #include <condition_variable>
 #include <iostream>
 #include <mutex>
@@ -55,6 +56,21 @@ void printNumber() {
     print = false;
     condition.notify_all();
   }
+}
+
+void* memcpy(void* dest, void* src, size_t num) {
+  void* ret = dest;
+  size_t i = 0;
+  assert(dest != NULL);
+  assert(src != NULL);
+  for (i = 0; i < num; i++) {
+    // 因为void* 不能直接解引⽤，所以需要强转成char*再解引⽤
+    // 此处的void*实现了泛型编程
+    *(char*)dest = *(char*)src;
+    dest = (char*)dest + 1;
+    src = (char*)src + 1;
+  }
+  return ret;
 }
 
 int main() {

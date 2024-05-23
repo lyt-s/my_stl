@@ -114,7 +114,6 @@ class ThreadPool {
   void enqueue(F&& f, Args&&... args) {
     std::function<void()> task =
         std::bind(std::forward<F>(f), std::forward<Args>(args)...);
-
     {
       std::unique_lock<std::mutex> lock(m_mtx);
       m_tasks.emplace(std::move(task));
