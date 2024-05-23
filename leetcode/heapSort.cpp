@@ -15,6 +15,7 @@ void adjustHeap(std::vector<int>& arr, int n, int i) {
   if (r_son < n && arr[largest] < arr[r_son]) {
     largest = r_son;
   }
+
   if (i != largest) {
     std::swap(arr[largest], arr[i]);
     adjustHeap(arr, n, largest);
