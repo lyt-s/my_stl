@@ -1,70 +1,133 @@
-
-
-// #include <cstddef>
+// #include <algorithm>
+// #include <climits>
 // #include <iostream>
-// #include <stack>
+// #include <queue>
 // #include <vector>
-#include <bits/stdc++.h>
-struct TreeNode {
-  int m_val;
-  TreeNode *left;
-  TreeNode *right;
-  TreeNode(int val = -1) : m_val(val), left(nullptr), right(nullptr) {}
-};
 
-std::vector<int> inorder(TreeNode *node) {
-  std::vector<int> res;
-  if (node == nullptr) {
-    return res;
-  }
-  TreeNode *cur = node;
-  std::stack<TreeNode *> st;
-  while (cur || !st.empty()) {
-    if (cur) {
-      st.push(cur);
-      cur = cur->left;
-    } else {
-      cur = st.top();
-      st.pop();
-      res.push_back(cur->m_val);
-      cur = cur->right;
+// using namespace std;
+
+// struct State {
+//   int x, y, gold, usedSkill;
+//   State(int _x, int _y, int _gold, int _usedSkill)
+//       : x(_x), y(_y), gold(_gold), usedSkill(_usedSkill) {}
+// };
+
+// int maxGold(vector<vector<int>>& grid) {
+//   int m = grid.size();
+//   int n = grid[0].size();
+//   vector<vector<vector<int>>> dp(
+//       m, vector<vector<int>>(n, vector<int>(2, INT_MIN)));
+
+//   queue<State> q;
+//   if (grid[0][0] != -1) {
+//     q.emplace(0, 0, grid[0][0], 0);
+//     dp[0][0][0] = grid[0][0];
+//   }
+
+//   int directions[4][2] = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
+//   int maxGoldCollected = 0;
+
+//   while (!q.empty()) {
+//     auto [x, y, gold, usedSkill] = q.front();
+//     q.pop();
+
+//     maxGoldCollected = max(maxGoldCollected, gold);
+
+//     for (auto& dir : directions) {
+//       int nx = x + dir[0], ny = y + dir[1];
+//       if (nx >= 0 && ny >= 0 && nx < m && ny < n) {
+//         if (grid[nx][ny] != -1 && gold + grid[nx][ny] >
+//         dp[nx][ny][usedSkill]) {
+//           dp[nx][ny][usedSkill] = gold + grid[nx][ny];
+//           q.emplace(nx, ny, dp[nx][ny][usedSkill], usedSkill);
+//         } else if (grid[nx][ny] == -1 && usedSkill == 0 &&
+//                    gold > dp[nx][ny][1]) {
+//           dp[nx][ny][1] = gold;
+//           q.emplace(nx, ny, gold, 1);
+//         }
+//       }
+//     }
+//   }
+
+//   return maxGoldCollected;
+// }
+
+// int main() {
+//   vector<vector<int>> grid1 = {{1, -1}, {-1, 1}};
+//   cout << maxGold(grid1) << endl;  // Output: 2
+
+//   vector<vector<int>> grid2 = {{-1}};
+//   cout << maxGold(grid2) << endl;  // Output: 0
+
+//   return 0;
+// }
+#include <iostream>
+#include <queue>
+#include <string>
+#include <unordered_map>
+#include <vector>
+using namespace std;
+
+// 使用BFS算法找到从start到end的最短路径
+int bfs(const unordered_map<int, vector<int>>& graph, int start, int end) {
+  if (start == end) return 0;
+  queue<pair<int, int>> q;  // 队列中存储节点编号和从start到当前节点的跳数
+  unordered_map<int, bool> visited;  // 记录节点是否被访问过
+  q.push({start, 0});
+  visited[start] = true;
+
+  while (!q.empty()) {
+    auto [node, distance] = q.front();
+    q.pop();
+    for (int neighbor : graph.at(node)) {
+      if (neighbor == end) return distance + 1;
+      if (!visited[neighbor]) {
+        q.push({neighbor, distance + 1});
+        visited[neighbor] = true;
+      }
     }
   }
-  return res;
+  return -1;  // 如果没有找到路径，则返回-1
 }
 
-class Logger {
- public:
-  virtual void log(const char *msg) { printf("%s", msg); }
-};
-
 int main() {
-  // std::vector<TreeNode *> res;
-  // for (int i = 1; i < 6; i++) {
-  //   res.push_back(new TreeNode(i));
-  // }
-  // for (int i = 0; i < 4; i++) {
-  //   res[i]->left = nullptr;
-  //   res[i]->right = res[i + 1];
-  // }
-  // res[4]->m_val = 5;
-  // res[4]->left = nullptr;
-  // res[4]->right = nullptr;
-  // TreeNode *node = res[0];
+  int n, m;
+  cin >> n >> m;
+  unordered_map<string, int> ipToId;
+  unordered_map<int, vector<int>> graph;
+  string ip;
+  int id;
 
-  TreeNode *res = new TreeNode(1);
-  TreeNode *node = res;
-  for (int i = 2; i < 6; i++) {
-    res->left = nullptr;
-    res->right = new TreeNode(i);
-    res = res->right;
+  // 读取IP地址和编号
+  for (int i = 0; i < n; ++i) {
+    cin >> ip >> id;
+    ipToId[ip] = id;
   }
 
-  std::vector<int> nums = inorder(node);
-  for (auto i : nums) {
-    std::cout << i << " ";
+  // 构建图
+  int a, b;
+  for (int i = 0; i < m; ++i) {
+    cin >> a >> b;
+    graph[a].push_back(b);
+    graph[b].push_back(a);  // 无向图
   }
 
-  // Logger *p = NULL;
-  // p->log("abc");
-};
+  int q;
+  cin >> q;
+  string startIp, endIp;
+
+  // 对于每对需要判断连通性的IP地址
+  for (int i = 0; i < q; ++i) {
+    cin >> startIp >> endIp;
+    if (ipToId.find(startIp) == ipToId.end() ||
+        ipToId.find(endIp) == ipToId.end()) {
+      cout << -1 << endl;  // 如果IP地址不存在，则输出-1
+      continue;
+    }
+    int startId = ipToId[startIp];
+    int endId = ipToId[endIp];
+    cout << bfs(graph, startId, endId) << endl;
+  }
+
+  return 0;
+}

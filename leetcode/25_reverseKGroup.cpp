@@ -93,13 +93,13 @@ ListNode* reverseKGroup(ListNode* head, int k) {
 
 int main() {
   int n, x;
-  // std::cin >> n;
-  // std::cin >> k;
+
   ListNode* dummy = new ListNode(0);
   ListNode* pre = dummy;
+  // std::cin >> n;
   // while (n--) {
   //   std::cin >> x;
-  //   pre->next = new ListNode(x);
+  //   pre->next = new ListNode(n);
   //   pre = pre->next;
   // }
   int k = 2;
