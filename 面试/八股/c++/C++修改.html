@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <title>c&plus;&plus;&#x91cc;&#x7684;sort&#x51fd;&#x6570;&#x662f;&#x600e;&#x4e48;&#x5b9e;&#x73b0;&#x7684;&#xff1f;</title>
+            <style>
+/* From extension vscode.github */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.vscode-dark img[src$=\#gh-light-mode-only],
+.vscode-light img[src$=\#gh-dark-mode-only],
+.vscode-high-contrast:not(.vscode-high-contrast-light) img[src$=\#gh-light-mode-only],
+.vscode-high-contrast-light img[src$=\#gh-dark-mode-only] {
+	display: none;
+}
+
+</style>
+            
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">
+<style>
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', system-ui, 'Ubuntu', 'Droid Sans', sans-serif;
+                font-size: 14px;
+                line-height: 1.6;
+            }
+        </style>
+        <style>
+.task-list-item {
+    list-style-type: none;
+}
+
+.task-list-item-checkbox {
+    margin-left: -20px;
+    vertical-align: middle;
+    pointer-events: none;
+}
+</style>
+<style>
+:root {
+  --color-note: #0969da;
+  --color-tip: #1a7f37;
+  --color-warning: #9a6700;
+  --color-severe: #bc4c00;
+  --color-caution: #d1242f;
+  --color-important: #8250df;
+}
+
+</style>
+<style>
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-note: #2f81f7;
+    --color-tip: #3fb950;
+    --color-warning: #d29922;
+    --color-severe: #db6d28;
+    --color-caution: #f85149;
+    --color-important: #a371f7;
+  }
+}
+
+</style>
+<style>
+.markdown-alert {
+  padding: 0.5rem 1rem;
+  margin-bottom: 16px;
+  color: inherit;
+  border-left: .25em solid #888;
+}
+
+.markdown-alert>:first-child {
+  margin-top: 0
+}
+
+.markdown-alert>:last-child {
+  margin-bottom: 0
+}
+
+.markdown-alert .markdown-alert-title {
+  display: flex;
+  font-weight: 500;
+  align-items: center;
+  line-height: 1
+}
+
+.markdown-alert .markdown-alert-title .octicon {
+  margin-right: 0.5rem;
+  display: inline-block;
+  overflow: visible !important;
+  vertical-align: text-bottom;
+  fill: currentColor;
+}
+
+.markdown-alert.markdown-alert-note {
+  border-left-color: var(--color-note);
+}
+
+.markdown-alert.markdown-alert-note .markdown-alert-title {
+  color: var(--color-note);
+}
+
+.markdown-alert.markdown-alert-important {
+  border-left-color: var(--color-important);
+}
+
+.markdown-alert.markdown-alert-important .markdown-alert-title {
+  color: var(--color-important);
+}
+
+.markdown-alert.markdown-alert-warning {
+  border-left-color: var(--color-warning);
+}
+
+.markdown-alert.markdown-alert-warning .markdown-alert-title {
+  color: var(--color-warning);
+}
+
+.markdown-alert.markdown-alert-tip {
+  border-left-color: var(--color-tip);
+}
+
+.markdown-alert.markdown-alert-tip .markdown-alert-title {
+  color: var(--color-tip);
+}
+
+.markdown-alert.markdown-alert-caution {
+  border-left-color: var(--color-caution);
+}
+
+.markdown-alert.markdown-alert-caution .markdown-alert-title {
+  color: var(--color-caution);
+}
+
+</style>
+        
+        </head>
+        <body class="vscode-body vscode-light">
+            <ul>
+<li><a href="#c%E9%87%8C%E7%9A%84sort%E5%87%BD%E6%95%B0%E6%98%AF%E6%80%8E%E4%B9%88%E5%AE%9E%E7%8E%B0%E7%9A%84">c++里的sort函数是怎么实现的？</a></li>
+<li><a href="#cpp%E5%BC%82%E6%AD%A5%E6%93%8D%E4%BD%9C%E5%8E%9F%E7%90%86%E7%BA%BF%E7%A8%8B%E6%B1%A0%E7%AD%96%E7%95%A5">cpp异步操作原理，线程池策略</a></li>
+<li><a href="#python%E5%92%8Cc%E7%9A%84%E5%8C%BA%E5%88%AB2">Python和C++的区别（2）</a></li>
+<li><a href="#%E5%87%BD%E6%95%B0%E6%8C%87%E9%92%88%E6%98%AF%E4%BB%80%E4%B9%88%E7%9B%B4%E6%8E%A5%E7%94%A8%E5%87%BD%E6%95%B0%E5%90%8D%E4%B8%8D%E8%A1%8C%E5%90%97">函数指针是什么，直接用函数名不行吗</a></li>
+<li><a href="#%E8%A1%A8%E8%BE%BE%E5%BC%8F%E5%92%8C%E8%AF%AD%E5%8F%A5%E7%9A%84%E5%8C%BA%E5%88%AB">表达式和语句的区别</a></li>
+<li><a href="#%E5%A6%82%E4%BD%95%E8%AE%A9%E5%85%B6%E4%BB%96%E6%96%87%E4%BB%B6%E8%AE%BF%E9%97%AE%E4%B8%8D%E4%BA%86%E6%9C%AC%E6%96%87%E5%B0%86%E7%9A%84%E5%8F%98%E9%87%8F%E7%A1%AC%E8%A6%81%E8%AE%BF%E9%97%AE%E5%91%A2">如何让其他文件访问不了本文将的变量，硬要访问呢？</a></li>
+<li><a href="#%E4%B8%A4%E4%B8%AA%E7%BA%BF%E7%A8%8B%E4%BF%AE%E6%94%B9%E4%B8%80%E4%B8%AA%E6%95%B0%E7%BB%93%E6%9E%9C%E6%98%AF%E4%BB%80%E4%B9%88%E5%BA%94%E8%AF%A5%E6%83%B3%E9%97%AE%E4%BA%92%E6%96%A5">两个线程修改一个数，结果是什么（应该想问互斥？</a></li>
+<li><a href="#%E4%BB%A3%E7%A0%81%E9%A2%98%E6%89%8B%E5%8A%A8%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AAmemory-allocator">代码题：手动实现一个memory allocator</a></li>
+<li><a href="#cpu%E7%BB%91%E6%A0%B8%E7%9A%84%E6%84%8F%E4%B9%89%E7%BB%86%E9%97%AE%E5%AF%B9%E5%86%85%E5%AD%98%E5%92%8Ccpu%E7%9A%84%E5%BD%B1%E5%93%8D">cpu绑核的意义，细问对内存和cpu的影响</a></li>
+<li><a href="#%E5%A6%82%E6%9E%9C%E4%BD%A0%E8%A6%81%E4%BC%98%E5%8C%96cpp%E4%BB%A3%E7%A0%81%E4%BD%A0%E6%9C%89%E4%BB%80%E4%B9%88%E6%80%9D%E8%B7%AF">如果你要优化cpp代码，你有什么思路？</a></li>
+<li><a href="#%E6%95%B0%E7%BB%84%E4%BD%BF%E7%94%A8%E6%8C%87%E9%92%88%E5%92%8C%E4%B8%8B%E6%A0%87%E7%9A%84%E5%8C%BA%E5%88%AB">数组使用指针和下标的区别？</a></li>
+<li><a href="#%E5%A4%9A%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E5%A4%84%E7%90%86">多线程安全处理</a></li>
+<li><a href="#%E8%BF%99%E4%BA%9B%E9%83%BD%E9%9C%80%E8%A6%81%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3%E4%B8%8D%E8%83%BD%E5%8F%AA%E6%98%AF%E5%85%AB%E8%82%A1%E6%B0%B4%E5%B9%B3">这些都需要深入理解，不能只是八股水平</a></li>
+<li><a href="#stdfunction-%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E6%9C%89function-%E6%88%91%E4%B8%BB%E8%A6%81%E8%AF%B4%E4%BA%86%E8%AE%B0%E5%BD%95%E5%87%BD%E6%95%B0%E8%BF%90%E8%A1%8C%E4%B8%8A%E4%B8%8B%E6%96%87">std::function 为什么要有function 我主要说了记录函数运行上下文</a></li>
+<li><a href="#stdbind-%E8%BF%99%E4%B8%89%E7%A7%8D%E4%BD%A0%E4%B8%80%E8%88%AC%E5%9C%A8%E4%BB%80%E4%B9%88%E5%9C%BA%E6%99%AF%E4%B8%8B%E4%BD%BF%E7%94%A8%E9%97%AD%E5%8C%85%E7%94%A8%E5%93%AA%E4%B8%AA%E4%B8%BA%E4%BB%80%E4%B9%88">std::bind 这三种你一般在什么场景下使用，闭包用哪个？为什么？</a></li>
+<li><a href="#%E7%AC%A6%E5%8F%B7%E8%BF%9E%E6%8E%A5--%E8%A7%A3%E5%86%B3%E7%AC%A6%E5%8F%B7%E8%BF%9E%E6%8E%A5%E5%86%B2%E7%AA%81">符号连接 -&gt;解决符号连接冲突</a></li>
+<li><a href="#new-malloc-%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86-%E6%89%A9%E5%B1%95%E8%AE%B2mmap%E7%B3%BB%E7%BB%9F%E4%B8%8D%E6%98%AF%E6%89%80%E6%9C%89malloc%E7%9A%84%E5%9D%97%E9%83%BD%E4%B8%8D%E5%9B%9E%E6%94%B6%E5%93%A6">new malloc 实现原理 （扩展讲mmap）系统不是所有malloc的块都不回收哦</a></li>
+<li><a href="#new-malloc-%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86-%E6%89%A9%E5%B1%95%E8%AE%B2mmap%E7%B3%BB%E7%BB%9F%E4%B8%8D%E6%98%AF%E6%89%80%E6%9C%89malloc%E7%9A%84%E5%9D%97%E9%83%BD%E4%B8%8D%E5%9B%9E%E6%94%B6%E5%93%A6-1">new malloc 实现原理 （扩展讲mmap）系统不是所有malloc的块都不回收哦</a>
+<ul>
+<li><a href="#new-malloc%E5%8C%BA%E5%88%AB2">new malloc区别（2）</a></li>
+</ul>
+</li>
+<li><a href="#%E6%88%91%E6%9C%89%E4%B8%80%E4%B8%AA%E7%B1%BB%E6%96%87%E4%BB%B6%E6%9C%89%E4%B8%80%E4%B8%AA%E7%A7%81%E6%9C%89%E6%88%90%E5%91%98%E5%A6%82%E4%BD%95%E5%9C%A8%E4%B8%8D%E4%BF%AE%E6%94%B9%E6%88%91%E6%96%87%E4%BB%B6%E7%9A%84%E5%89%8D%E6%8F%90%E4%B8%8B%E5%8F%8B%E5%85%83%E6%89%93%E5%92%A9%E8%AE%BF%E9%97%AE%E8%AF%A5%E6%88%90%E5%91%982">我有一个类文件有一个私有成员，如何在不修改我文件的前提下（友元打咩），访问该成员（2）</a></li>
+<li><a href="#%E7%94%A8cpp%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AA%E4%BA%92%E6%96%A5%E9%94%81%E5%86%99%E4%B8%AA%E5%B0%8Fdemo">用cpp实现一个互斥锁，写个小demo</a></li>
+<li><a href="#%E7%9F%A5%E4%B8%8D%E7%9F%A5%E9%81%93strcpy%E7%94%A8%E8%BF%99%E4%B8%AA%E5%BA%93%E5%87%BD%E6%95%B0%E9%9C%80%E8%A6%81%E6%B3%A8%E6%84%8F%E4%BB%80%E4%B9%88">知不知道strcpy（），用这个库函数需要注意什么</a></li>
+<li><a href="#lamda%E8%A1%A8%E8%BE%BE%E5%BC%8F%E4%BB%8B%E7%BB%8D%E4%B8%80%E4%B8%8B%E5%9C%A8%E5%93%AA%E5%84%BF%E7%94%A8%E8%BF%87%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E4%BD%BF%E7%94%A8lamda%E8%A1%A8%E8%BE%BE%E5%BC%8F3">Lamda表达式介绍一下，在哪儿用过，为什么要使用Lamda表达式？(3)</a></li>
+<li><a href="#sizeof%E4%B8%80%E4%B8%AA%E7%B1%BB%E7%9A%84%E5%A4%A7%E5%B0%8F%E4%B8%8D%E7%9F%A5%E9%81%93%E6%80%8E%E4%B9%88%E7%AE%97%E7%9A%84">sizeof一个类的大小(不知道怎么算的)</a></li>
+<li><a href="#%E6%8C%87%E9%92%88%E5%B8%B8%E9%87%8F%E5%92%8C%E5%B8%B8%E9%87%8F%E6%8C%87%E9%92%88%E7%9A%84%E5%8C%BA%E5%88%AB2">指针常量和常量指针的区别（2）</a></li>
+<li><a href="#%E5%A6%82%E4%BD%95%E4%BF%9D%E8%AF%81%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8">如何保证线程安全</a>
+<ul>
+<li><a href="#%E4%BB%80%E4%B9%88%E6%98%AF%E5%8F%AF%E9%87%8D%E5%85%A5">什么是可重入</a></li>
+</ul>
+</li>
+<li><a href="#%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B">函数式编程</a></li>
+<li><a href="#%E9%97%AD%E5%8C%85">闭包</a></li>
+<li><a href="#c%E4%B8%80%E4%B8%AA%E5%87%BD%E6%95%B0%E9%87%8C%E5%8F%AF%E8%83%BD%E5%9C%A8%E5%A4%9A%E4%B8%AA%E5%9C%B0%E6%96%B9%E5%BC%82%E5%B8%B8%E8%BF%94%E5%9B%9E%E8%BF%99%E7%A7%8D%E6%83%85%E5%86%B5%E4%B8%8B%E7%94%A8c%E5%9F%BA%E6%9C%AC%E7%89%B9%E6%80%A7%E5%A6%82%E4%BD%95%E5%9C%A8%E8%BF%94%E5%9B%9E%E5%89%8D%E7%9F%A5%E9%81%93%E8%AF%A5%E5%87%BD%E6%95%B0%E6%89%A7%E8%A1%8C%E7%9A%84%E6%97%B6%E9%97%B4%E6%9E%90%E6%9E%84">C++一个函数里可能在多个地方异常返回，这种情况下用C++基本特性如何在返回前知道该函数执行的时间（析构）</a></li>
+<li><a href="#c%E6%9C%89%E5%93%AA%E5%87%A0%E7%A7%8D%E9%94%81">C++有哪几种锁</a>
+<ul>
+<li><a href="#%E9%94%81%E7%94%A8%E8%BF%87%E5%90%97-%E6%88%91%E8%AF%B4%E4%BA%86%E7%9D%A1%E7%9C%A0%E9%94%81%E5%92%8C%E8%87%AA%E6%97%8B%E9%94%81%E7%9A%84%E5%AE%9E%E7%8E%B0">锁用过吗？ 我说了睡眠锁和自旋锁的实现</a></li>
+<li><a href="#cpp-%E7%9A%84%E9%94%81-mutex-%E6%98%AF%E6%80%8E%E4%B9%88%E5%AE%9E%E7%8E%B0%E7%9A%84%E8%AF%BB%E9%94%81%E5%86%99%E9%94%81%E8%AF%BB%E5%86%99%E9%94%81%E6%98%AF%E4%BB%80%E4%B9%88">Cpp 的锁 mutex 是怎么实现的？读锁，写锁，读写锁是什么？</a></li>
+<li><a href="#%E4%BA%92%E6%96%A5%E9%94%81-%E5%9C%A8c%E4%B8%AD%E6%9C%89%E5%AF%B9%E5%85%B6%E5%B0%81%E8%A3%85%E7%9A%84%E6%A8%A1%E6%9D%BF%E7%B1%BB-%E6%9C%89%E5%93%AA%E4%BA%9B">互斥锁， 在C++中有对其封装的模板类， 有哪些？</a></li>
+<li><a href="#%E4%BD%A0%E4%BA%86%E8%A7%A3%E8%AF%BB%E5%86%99%E9%94%81%E5%90%97">你了解读写锁吗</a></li>
+</ul>
+</li>
+<li><a href="#c%E8%B0%83%E8%AF%95%E6%96%B9%E6%B3%95%E4%B8%8A%E7%BA%BF%E4%B9%8B%E5%90%8E%E5%A6%82%E4%BD%95%E8%B0%83%E8%AF%95">C++调试方法，上线之后如何调试</a></li>
+<li><a href="#"></a></li>
+<li><a href="#-1"></a></li>
+<li><a href="#c%E4%B8%AD%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E6%80%8E%E4%B9%88%E7%90%86%E8%A7%A3">C++中面向对象怎么理解</a>
+<ul>
+<li><a href="#%E4%B8%89%E5%A4%A7%E7%89%B9%E6%80%A7">三大特性</a></li>
+<li><a href="#%E9%87%8D%E8%BD%BD%E6%80%8E%E4%B9%88%E5%AE%9E%E7%8E%B0">重载怎么实现</a></li>
+<li><a href="#%E9%87%8D%E5%86%99%E5%92%8C%E9%87%8D%E8%BD%BD3">重写和重载（3）</a></li>
+</ul>
+</li>
+<li><a href="#%E5%87%BD%E6%95%B0%E6%8C%87%E9%92%88">函数指针</a></li>
+<li><a href="#c%E5%BC%82%E5%B8%B8%E8%BF%99%E4%B8%AA%E4%B8%8D%E5%A4%AA%E4%BC%9A-%E6%8A%9B%E5%87%BA%E5%BC%82%E5%B8%B8%E4%B9%8B%E5%90%8E%E4%BC%9A%E6%80%8E%E6%A0%B7-%E4%B8%A4%E4%B8%AA%E5%BC%82%E5%B8%B8%E5%AD%90%E7%B1%BB%E7%BB%A7%E6%89%BF%E7%88%B6%E7%B1%BB%E7%84%B6%E5%90%8E%E6%83%B3%E8%A6%81%E8%B0%83%E7%94%A8%E4%BB%80%E4%B9%88%E4%BB%80%E4%B9%88%E8%AE%B0%E4%B8%8D%E5%A4%AA%E6%B8%85%E4%BA%86">C++异常,(这个不太会, 抛出异常之后会怎样...., 两个异常,子类继承父类.然后想要调用什么什么,记不太清了</a></li>
+<li><a href="#cpp%E6%A8%A1%E6%9D%BFtemplate%E7%94%A8%E5%88%B0%E4%BA%86%E4%BB%80%E4%B9%88%E5%A4%B4%E6%96%87%E4%BB%B6%E8%BF%98%E6%98%AFtemplate%E5%86%99%E5%9C%A8%E4%BB%80%E4%B9%88%E5%A4%B4%E6%96%87%E4%BB%B6%E4%B8%8D%E8%AE%B0%E5%BE%97%E4%BA%86">Cpp模板template用到了什么头文件（还是template写在什么头文件，不记得了）？</a>
+<ul>
+<li><a href="#%E6%A8%A1%E6%9D%BF%E6%A8%A1%E6%9D%BF%E7%89%B9%E4%BE%8B%E5%8C%96-%E5%A4%9A%E4%B8%AA%E6%96%87%E4%BB%B6%E5%BC%95%E7%94%A8%E6%A8%A1%E6%9D%BF%E5%A4%B4%E6%96%87%E4%BB%B6%E6%A8%A1%E6%9D%BF%E5%AE%9E%E4%BE%8B%E5%8C%96%E5%87%A0%E6%AC%A1">模板,模板特例化, 多个文件引用模板头文件,模板实例化几次</a></li>
+</ul>
+</li>
+<li><a href="#cpp-java%E5%92%8Cgo%E7%9A%84%E5%8C%BA%E5%88%AB4%E8%81%8A%E4%BA%86%E5%BE%88%E5%A4%9A%E6%B3%9B%E5%9E%8B%E7%9B%B8%E5%85%B3">cpp java和go的区别？（4）（聊了很多泛型相关）</a></li>
+<li><a href="#placement-new">placement new？</a>
+<ul>
+<li><a href="#%E5%A6%82%E4%BD%95%E5%9C%A8%E5%B7%B2%E7%BB%8F%E7%94%B3%E8%AF%B7%E7%9A%84%E5%86%85%E5%AD%98%E9%87%8Cnewplacement-new">如何在已经申请的内存里new：placement new</a></li>
+</ul>
+</li>
+<li><a href="#%E5%80%BC%E4%BC%A0%E9%80%92%E4%B8%8E%E5%BC%95%E7%94%A8%E4%BC%A0%E9%80%92">值传递与引用传递</a></li>
+<li><a href="#-2"></a></li>
+<li><a href="#-3"></a></li>
+<li><a href="#%E9%87%8E%E6%8C%87%E9%92%88">野指针</a></li>
+<li><a href="#%E5%8A%A8%E6%80%81%E5%A4%9A%E6%80%81">动态多态</a></li>
+<li><a href="#free%E4%B8%80%E4%B8%AA%E5%AF%B9%E8%B1%A1%E6%8C%87%E9%92%88-%E4%B8%AD%E9%97%B4%E5%8F%91%E7%94%9F%E4%BA%86%E4%BB%80%E4%B9%88">free一个对象指针 中间发生了什么</a></li>
+<li><a href="#c%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F2">C++内存泄漏（2）</a>
+<ul>
+<li><a href="#delete-%E6%98%AF%E6%80%8E%E6%A0%B7%E7%AE%97%E5%87%BA%E5%9B%9E%E6%94%B6%E7%9A%84%E6%95%B0%E7%BB%84%E7%9A%84%E9%95%BF%E5%BA%A6%E7%9A%84">delete []是怎样算出回收的数组的长度的</a></li>
+<li><a href="#delete%E5%A6%82%E4%BD%95%E5%88%A4%E6%96%AD%E8%A6%81%E5%88%A0%E9%99%A4%E5%86%85%E5%AE%B9%E7%9A%84%E5%A4%A7%E5%B0%8F">delete如何判断要删除内容的大小</a></li>
+<li><a href="#cpp%E4%BB%80%E4%B9%88%E6%97%B6%E5%80%99%E7%94%A8delete">cpp什么时候用delete[]</a></li>
+</ul>
+</li>
+<li><a href="#try-catch">try-catch</a></li>
+<li><a href="#c%E7%A8%8B%E5%BA%8F%E7%BC%96%E8%AF%91%E7%9A%84%E8%BF%87%E7%A8%8B">C++程序编译的过程</a></li>
+<li><a href="#static%E5%85%B3%E9%94%AE%E5%AD%97%E5%9C%A8c%E7%A8%8B%E5%BA%8F%E7%BC%96%E8%AF%91%E8%BF%87%E7%A8%8B%E7%9A%84%E5%93%AA%E4%B8%AA%E9%98%B6%E6%AE%B5%E8%B5%B7%E4%BD%9C%E7%94%A8">static关键字在C++程序编译过程的哪个阶段起作用？</a></li>
+<li><a href="#%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0%E4%B8%AD%E5%8F%AF%E4%BB%A5%E8%B0%83%E7%94%A8%E8%99%9A%E5%87%BD%E6%95%B0%E5%90%97">构造函数中可以调用虚函数吗？</a></li>
+<li><a href="#c%E8%BF%90%E8%A1%8C%E6%97%B6%E5%AD%98%E5%82%A8%E7%BB%93%E6%9E%84">C++运行时存储结构</a>
+<ul>
+<li><a href="#c%E5%86%85%E5%AD%98%E5%88%86%E5%B8%83">C++内存分布</a></li>
+<li><a href="#%E4%BD%A0%E8%AF%B4%E5%88%B0%E4%BA%86%E6%A0%88%E6%BA%A2%E5%87%BA%E9%82%A3%E4%BB%80%E4%B9%88%E6%83%85%E5%86%B5%E4%B8%8B%E4%BC%9A%E6%A0%88%E6%BA%A2%E5%87%BA%E4%BD%A0%E4%BA%86%E8%A7%A3%E5%90%97">你说到了栈溢出，那什么情况下会栈溢出，你了解吗</a></li>
+<li><a href="#%E5%A0%86%E5%92%8C%E6%A0%88%E5%8C%BA%E5%88%AB%E5%8F%AF%E4%B8%8D%E5%8F%AF%E4%BB%A5%E6%B7%B1%E5%85%A5%E4%B8%80%E4%B8%8B%E5%A0%86%E5%92%8C%E6%A0%88%E5%85%B6%E5%AE%9E%E6%98%AF%E4%B8%80%E6%A0%B7%E7%9A%8414">堆和栈区别（可不可以深入一下？堆和栈其实是一样的）（14）</a></li>
+<li><a href="#%E6%A0%88%E5%92%8C%E5%A0%86%E7%9A%84%E7%89%B9%E7%82%B9-%E9%80%82%E7%94%A8%E5%9C%BA%E6%99%AF">栈和堆的特点 适用场景</a></li>
+<li><a href="#%E6%8C%87%E9%92%88%E6%8C%87%E5%90%91%E5%A0%86%E4%BC%9A%E5%8F%91%E7%94%9F%E4%BB%80%E4%B9%88%E9%97%AE%E9%A2%98">指针指向堆会发生什么问题</a></li>
+<li><a href="#%E5%A0%86-%E5%A0%86%E4%B8%BA%E4%BB%80%E4%B9%88%E8%83%BD%E7%94%A8%E6%95%B0%E7%BB%84%E8%A1%A8%E7%A4%BA">堆， 堆为什么能用数组表示</a></li>
+<li><a href="#%E6%A0%88%E4%B8%BA%E4%BB%80%E4%B9%88%E6%AF%94%E5%A0%86%E5%BF%AB">栈为什么比堆快</a></li>
+<li><a href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E5%88%86%E5%A0%86%E5%92%8C%E6%A0%88">为什么要分堆和栈</a></li>
+<li><a href="#%E7%BA%BF%E7%A8%8B%E4%BC%9A%E6%9C%89%E8%87%AA%E5%B7%B1%E7%8B%AC%E7%AB%8B%E7%9A%84%E6%A0%88%E5%8C%BA%E5%90%97%E4%BC%9A%E6%9C%89%E7%8B%AC%E7%AB%8B%E7%9A%84%E5%A0%86%E5%8C%BA%E5%90%97">线程会有自己独立的栈区吗？会有独立的堆区吗？</a></li>
+<li><a href="#%E8%BF%9B%E7%A8%8B%E7%9A%84%E5%86%85%E5%AD%98%E7%A9%BA%E9%97%B4">进程的内存空间</a></li>
+<li><a href="#%E7%AE%A1%E7%90%86%E5%86%85%E5%AD%98">管理内存</a></li>
+<li><a href="#%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D">内存分配</a></li>
+<li><a href="#cpp%E5%86%85%E5%AD%98%E5%88%86%E5%8C%BA">cpp内存分区</a></li>
+<li><a href="#%E5%A6%82%E4%BD%95%E6%8A%8A%E5%AF%B9%E8%B1%A1%E5%8F%AA%E5%88%86%E9%85%8D%E5%88%B0%E6%A0%88%E5%8C%BA">如何把对象只分配到栈区</a></li>
+</ul>
+</li>
+<li><a href="#%E5%86%85%E5%AD%98%E5%8A%A8%E6%80%81%E5%88%86%E9%85%8D-i%E5%92%8Ci%E7%9A%84%E5%8C%BA%E5%88%AB">内存动态分配 i++和++i的区别</a></li>
+<li><a href="#%E6%95%B0%E7%BB%84%E5%90%8D%E5%AD%97%E5%8F%AF%E4%BB%A5%E4%BD%9C%E4%B8%BA%E6%8C%87%E9%92%88%E5%90%97">数组名字可以作为指针吗</a></li>
+<li><a href="#%E7%B1%BB%E5%9E%8B%E8%BD%AC%E6%8D%A2">类型转换</a></li>
+<li><a href="#c%E5%92%8Cc%E4%B8%A4%E8%80%85%E5%90%84%E6%9C%89%E4%BB%80%E4%B9%88%E4%BC%98%E7%BC%BA%E7%82%B9%E5%88%86%E5%88%AB%E9%80%82%E5%90%88%E7%94%A8%E5%9C%A8%E4%BB%80%E4%B9%88%E6%83%85%E5%86%B5%E4%B8%8B4">C和C++两者各有什么优缺点，分别适合用在什么情况下（4）</a>
+<ul>
+<li><a href="#c%E5%92%8Cc%E5%B7%AE%E5%88%AB3">C和C++差别（3）</a></li>
+</ul>
+</li>
+<li><a href="#%E5%AF%B9%E6%8C%87%E9%92%88%E5%AD%97%E7%AC%A6%E6%95%B0%E7%BB%84%E6%B1%82sizeof">对指针，字符数组求sizeof</a></li>
+<li><a href="#%E5%86%99%E4%B8%80%E4%B8%AA%E7%A9%BA%E7%B1%BB%E7%BC%96%E8%AF%91%E5%99%A8%E8%87%AA%E5%8A%A8%E7%94%9F%E6%88%90%E4%BA%86%E5%93%AA%E4%BA%9B%E5%87%BD%E6%95%B03">写一个空类，编译器自动生成了哪些函数（3）</a>
+<ul>
+<li><a href="#%E6%8B%B7%E8%B4%9D%E6%9E%84%E9%80%A0%E5%9C%A8%E5%93%AA%E4%BA%9B%E6%83%85%E5%86%B5%E4%B8%8B%E4%B8%8D%E8%87%AA%E5%8A%A8%E7%94%9F%E6%88%90">拷贝构造在哪些情况下不自动生成</a></li>
+</ul>
+</li>
+<li><a href="#%E7%A9%BA%E7%B1%BB--%E7%A9%BA%E7%B1%BB%E7%BB%A7%E6%89%BF--%E7%A9%BA%E5%9F%BA%E7%B1%BB%E4%BC%98%E5%8C%96">空类 / 空类继承 / 空基类优化</a></li>
+<li><a href="#c-forward-%E4%BD%9C%E7%94%A8">c++ forward 作用</a></li>
+<li><a href="#%E5%B7%A6%E5%80%BC%E5%92%8C%E5%8F%B3%E5%80%BC4">左值和右值（4）</a>
+<ul>
+<li><a href="#%E5%86%99%E4%B8%80%E4%B8%AA%E5%8F%B3%E5%80%BC%E8%B5%8B%E5%80%BC%E8%BF%90%E7%AE%97%E7%AC%A6">写一个右值赋值运算符</a></li>
+</ul>
+</li>
+<li><a href="#%E5%AE%8C%E7%BE%8E%E8%BD%AC%E5%8F%912">完美转发（2）</a>
+<ul>
+<li><a href="#%E6%8C%87%E9%92%88%E5%92%8C%E6%95%B0%E7%BB%84%E7%9A%84%E5%8C%BA%E5%88%AB">指针和数组的区别</a></li>
+</ul>
+</li>
+<li><a href="#%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0memcpy">如何实现memcpy？</a></li>
+<li><a href="#raii">RAII</a></li>
+<li><a href="#%E8%BF%AD%E4%BB%A3%E5%99%A8%E7%9F%A5%E9%81%93%E5%90%97%E5%AE%9E%E7%8E%B0%E8%BF%AD%E4%BB%A3%E5%99%A8">迭代器知道吗，实现迭代器++</a></li>
+<li><a href="#%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%8828">智能指针(28)</a>
+<ul>
+<li><a href="#%E5%BE%88%E7%86%9F%E7%BB%83%E4%BA%86%E4%BB%8Eraii%E5%88%B0autoptr%E4%B8%BA%E4%BB%80%E4%B9%88%E5%BA%9F%E5%BC%83%E5%86%8D%E5%88%B0shared_ptrunique_ptr%E8%AF%A6%E7%BB%86%E4%BB%8B%E7%BB%8D%E4%BA%86%E9%87%8C%E9%9D%A2%E7%9A%84%E6%96%B9%E6%B3%95%E5%92%8C%E4%B8%80%E4%BA%9B%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9">（很熟练了从RAII到autoptr为什么废弃再到shared_ptr、unique_ptr，详细介绍了里面的方法和一些注意事项）</a></li>
+<li><a href="#%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88%E8%A7%A3%E5%86%B3%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E9%97%AE%E9%A2%98%E7%9A%84%E5%8E%9F%E7%90%86">智能指针解决内存泄漏问题的原理</a></li>
+<li><a href="#unique_ptr%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88%E6%98%AF%E5%A6%82%E4%BD%95%E5%81%9A%E5%88%B0%E7%8B%AC%E5%8D%A0%E7%9A%84">unique_ptr智能指针是如何做到独占的</a></li>
+<li><a href="#shared_ptr%E5%86%85%E9%83%A8%E5%AE%9E%E7%8E%B0%E7%9A%84%E6%9C%BA%E5%88%B6">shared_ptr内部实现的机制</a></li>
+<li><a href="#shared_ptr%E8%AE%A1%E6%95%B0%E5%8F%98%E9%87%8F%E5%AD%98%E6%94%BE%E4%BD%8D%E7%BD%AE">shared_ptr计数变量存放位置</a></li>
+<li><a href="#unique_ptr%E5%92%8Cshared_ptr%E5%B7%AE%E5%BC%82">unique_ptr和shared_ptr差异</a></li>
+<li><a href="#%E5%AF%B9unique_ptr%E8%BF%9B%E8%A1%8Cstdmove%E6%93%8D%E4%BD%9C">对unique_ptr进行std::move()操作</a></li>
+<li><a href="#future-%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88-decltype">future 智能指针 decltype</a></li>
+<li><a href="#weakptr">weakptr</a></li>
+<li><a href="#autoptr">autoptr</a></li>
+<li><a href="#shard_ptr%E6%98%AF%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E7%9A%84%E5%90%97%E4%B8%BA%E4%BB%80%E4%B9%88%E4%B8%8D%E4%BF%9D%E8%AF%81%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8">shard_ptr是线程安全的吗，为什么不保证线程安全</a></li>
+<li><a href="#%E7%BB%99%E4%BA%86%E4%B8%80%E6%AE%B5cpp%E4%BB%A3%E7%A0%81%E6%89%BE%E5%87%BA%E9%94%99%E8%AF%AF%E5%85%B3%E4%BA%8E%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88unique_ptr%E7%9A%84%E6%8C%87%E5%90%91%E6%96%B0%E5%AF%B9%E8%B1%A1%E5%90%8E%E5%8E%9F%E6%9D%A5%E6%8C%87%E5%90%91%E7%9A%84%E5%AF%B9%E8%B1%A1%E4%BC%9A%E9%94%80%E6%AF%81">给了一段cpp代码，找出错误。关于智能指针unique_ptr的：指向新对象后，原来指向的对象会销毁</a></li>
+<li><a href="#%E7%BB%99%E4%BA%86%E4%B8%80%E6%AE%B5cpp%E4%BB%A3%E7%A0%81%E6%89%BE%E5%87%BA%E9%94%99%E8%AF%AF%E5%85%B3%E4%BA%8E%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88unique_ptr%E7%9A%84%E6%8C%87%E5%90%91%E6%96%B0%E5%AF%B9%E8%B1%A1%E5%90%8E%E5%8E%9F%E6%9D%A5%E6%8C%87%E5%90%91%E7%9A%84%E5%AF%B9%E8%B1%A1%E4%BC%9A%E9%94%80%E6%AF%81-1">给了一段cpp代码，找出错误。关于智能指针unique_ptr的：指向新对象后，原来指向的对象会销毁</a></li>
+<li><a href="#make_shared%E5%92%8Cshared_ptr">make_shared和shared_ptr</a></li>
+</ul>
+</li>
+<li><a href="#%E6%89%8B%E5%86%99shared_ptr3">手写shared_ptr（3）</a></li>
+<li><a href="#%E6%89%8B%E6%92%95unique_ptr%E6%8E%A7%E5%88%B6%E6%9D%83%E8%BD%AC%E7%A7%BB%E7%A7%BB%E5%8A%A8%E8%AF%AD%E4%B9%89">手撕：Unique_ptr，控制权转移(移动语义）</a></li>
+<li><a href="#cpp-class%E5%AD%98%E5%82%A8%E7%9B%B8%E5%85%B3%E4%BB%A5%E5%8F%8A%E8%99%9A%E5%87%BD%E6%95%B0">cpp class存储相关以及虚函数</a></li>
+<li><a href="#%E6%89%8B%E6%92%95%E7%B1%BB%E7%BB%A7%E6%89%BF%E5%A0%86%E6%A0%88%E4%B8%8A%E5%88%86%E5%88%AB%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0%E5%A4%9A%E6%80%81">手撕：类继承，堆栈上分别代码实现多态</a></li>
+<li><a href="#%E6%8A%BD%E8%B1%A1%E7%B1%BB%E8%99%9A%E5%87%BD%E6%95%B0">抽象类，虚函数</a></li>
+<li><a href="#a-b%E7%B1%BB%E9%83%BD%E6%9C%89%E8%99%9A%E5%87%BD%E6%95%B0-c%E7%BB%A7%E6%89%BFa%E5%92%8Cb--c%E7%9A%84%E5%A4%A7%E5%B0%8F-c%E6%9C%89%E5%87%A0%E4%B8%AA%E8%99%9A%E6%8C%87%E9%92%88">A, B类都有虚函数, C继承A和B, , C的大小, C有几个虚指针</a></li>
+<li><a href="#%E5%A4%9A%E6%80%81%E7%9A%84%E5%BA%95%E5%B1%82%E5%8F%8A%E5%8E%9F%E7%90%8623">多态的底层及原理（23）</a>
+<ul>
+<li><a href="#%E8%99%9A%E5%87%BD%E6%95%B0%E8%A1%A8%E6%8C%87%E9%92%88%E5%85%AB%E8%82%A1%E7%AD%94%E5%87%BA%E6%9D%A5%E4%BA%86%E7%BB%99%E4%BE%8B%E9%A2%98%E5%88%A4%E6%96%AD%E7%BB%93%E6%9E%9C%E5%81%9A%E9%94%99%E4%BA%86">虚函数表指针：八股答出来了，给例题判断结果做错了</a></li>
+<li><a href="#%E5%A4%9A%E6%80%81-%E8%99%9A%E5%87%BD%E6%95%B0%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86">多态 虚函数实现原理</a></li>
+<li><a href="#%E4%B8%80%E4%B8%AA%E7%B1%BB%E7%A9%BA%E6%8C%87%E9%92%88%E5%8F%AF%E4%BB%A5%E8%B0%83%E7%94%A8%E8%99%9A%E5%87%BD%E6%95%B0%E5%90%97%E5%8F%AF%E4%BB%A5%E8%B0%83%E7%94%A8%E6%99%AE%E9%80%9A%E5%87%BD%E6%95%B0%E5%90%97">一个类空指针可以调用虚函数吗？可以调用普通函数吗？</a></li>
+<li><a href="#%E5%8A%A8%E6%80%81%E7%BB%91%E5%AE%9A%E5%92%8C%E9%9D%99%E6%80%81%E7%BB%91%E5%AE%9A%E5%8C%BA%E5%88%AB">动态绑定和静态绑定区别</a></li>
+<li><a href="#%E4%B8%BA%E5%95%A5%E9%9C%80%E8%A6%81%E8%99%9A%E5%87%BD%E6%95%B0">为啥需要虚函数</a></li>
+<li><a href="#%E8%99%9A%E5%87%BD%E6%95%B0%E5%8F%AF%E4%BB%A5%E6%98%AF%E5%86%85%E8%81%94%E7%9A%84%E5%90%97">虚函数可以是内联的吗</a></li>
+<li><a href="#%E7%BA%AF%E8%99%9A%E5%87%BD%E6%95%B02">纯虚函数（2）</a></li>
+<li><a href="#%E5%9F%BA%E7%B1%BB%E5%92%8C%E6%B4%BE%E7%94%9F%E7%B1%BB%E8%99%9A%E5%87%BD%E6%95%B0%E8%A1%A8%E4%BA%A4%E6%8D%A2%E4%BC%9A%E6%80%8E%E4%B9%88%E6%A0%B7">基类和派生类虚函数表交换会怎么样</a></li>
+<li><a href="#%E9%9D%99%E6%80%81%E5%A4%9A%E6%80%81">静态多态</a></li>
+</ul>
+</li>
+<li><a href="#%E6%95%B4%E5%BD%A2%E5%92%8C%E6%B5%AE%E7%82%B9%E7%9A%84%E5%AD%98%E5%82%A8">整形和浮点的存储</a>
+<ul>
+<li><a href="#%E6%B5%AE%E7%82%B9%E6%95%B0%E7%9A%84%E7%AD%890%E7%9A%84%E5%88%A4%E6%96%AD">浮点数的等0的判断</a></li>
+</ul>
+</li>
+<li><a href="#%E6%A0%87%E5%87%86%E5%BA%93%E7%94%A8%E5%88%B0%E5%93%AA%E4%BA%9B%E5%85%B6%E5%AE%9E%E4%BB%96%E9%97%AE%E7%9A%84%E6%98%AFstl%E5%AE%B9%E5%99%A8%E8%B6%85%E7%BA%A7%E9%87%8D%E7%82%B9%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88%E5%90%8C%E7%BA%A7%E5%88%AB">标准库用到哪些（其实他问的是STL，容器）（超级重点，智能指针同级别）</a>
+<ul>
+<li><a href="#vectorlistmapunordered_map%E5%BA%95%E5%B1%82%E5%AE%9E%E7%8E%B0">vector,list,map,unordered_map底层实现</a></li>
+<li><a href="#vector%E7%9A%84erase%E6%96%B9%E6%B3%95%E7%94%A8i%E5%88%A0%E9%99%A4%E4%BC%9A%E6%9C%89%E9%97%AE%E9%A2%98%E5%90%97">vector的erase()方法用i++删除会有问题吗</a></li>
+<li><a href="#vector%E4%B8%ADpush_back%E5%92%8Cemplace_back%E7%9A%84%E5%8C%BA-%E5%88%AB">vector中push_back和emplace_back的区 别</a></li>
+<li><a href="#set%E5%92%8Cmap%E7%9A%84%E7%90%86%E8%A7%A3%E5%8F%8A%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF">set和map的理解及使用场景</a></li>
+<li><a href="#map%E5%92%8Cunordered_map%E7%9A%84%E7%BB%93%E6%9E%84%E5%8F%8A%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF%E5%8F%8A%E5%8C%BA%E5%88%AB">map和unordered_map的结构及使用场景及区别</a></li>
+<li><a href="#vector%E5%86%85%E5%AD%98%E6%89%A9%E5%AE%B9%E6%9C%BA%E5%88%B6vector%E6%89%A9%E5%AE%B9%E7%AD%96%E7%95%A515%E5%80%8D%E6%89%A9%E5%AE%B9-%E4%B8%BA%E4%BB%80%E4%B9%88%E6%AF%942%E5%80%8D%E5%A5%BD">vector内存扩容机制（vector扩容策略，1.5倍扩容 为什么比2倍好）</a></li>
+<li><a href="#%E6%80%8E%E4%B9%88%E9%99%8D%E4%BD%8E%E6%89%A9%E5%AE%B9%E6%AC%A1%E6%95%B0reserveresize">怎么降低扩容次数(reserve,resize)</a></li>
+<li><a href="#-4"></a></li>
+<li><a href="#stl-sort-%E4%B8%BA%E4%BB%80%E4%B9%88%E5%8F%AF%E4%BB%A5%E9%81%BF%E5%85%8D%E7%88%86%E6%A0%88%E4%B8%8D%E4%BC%9A%E9%80%92%E5%BD%92%E5%A6%82%E4%BD%95%E9%81%BF%E5%85%8D%E7%88%86%E6%A0%88">STL sort 为什么可以避免爆栈（？不会），递归如何避免爆栈</a></li>
+<li><a href="#map%E4%B8%BA%E4%BB%80%E4%B9%88%E4%BD%BF%E7%94%A8%E7%BA%A2%E9%BB%91%E6%A0%91%E4%B8%8Eavl%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB%E4%B8%BA%E4%BB%80%E4%B9%88%E4%B8%8D%E7%94%A8avl%E5%AE%9E%E7%8E%B0">map为什么使用红黑树，与AVL有什么区别，为什么不用AVL实现？</a></li>
+<li><a href="#vector%E4%B8%BA%E4%BB%80%E4%B9%88%E5%8F%AF%E4%BB%A5%E9%9A%8F%E6%9C%BA%E8%AE%BF%E9%97%AE">vector为什么可以随机访问</a></li>
+<li><a href="#vector%E5%BA%95%E5%B1%82%E6%95%B0%E7%BB%84%E5%A4%A7%E5%B0%8F%E5%88%86%E9%85%8D">vector底层数组大小分配</a></li>
+<li><a href="#vectorlistmapset%E7%AD%89stl%E5%AE%B9%E5%99%A8%E7%9B%B8%E5%85%B3">vector，list，map，set等STL容器相关</a></li>
+<li><a href="#vector%E6%89%A9%E5%AE%B9%E5%90%8E%E7%BC%A9%E5%87%8F%E4%B8%B4%E6%97%B6%E5%8F%98%E9%87%8Fswap%E5%BD%93%E6%97%B6%E6%B2%A1%E6%83%B3%E5%88%B0swap">vector扩容后缩减（临时变量+swap，当时没想到swap）</a></li>
+<li><a href="#stl%E4%B8%AD%E7%9A%84%E4%BC%98%E5%85%88%E9%98%9F%E5%88%97%E7%9A%84%E5%AE%9E%E7%8E%B0">STL中的优先队列的实现</a></li>
+</ul>
+</li>
+<li><a href="#c%E7%89%B9%E6%80%A711">C++特性（11）</a>
+<ul>
+<li><a href="#c11%E7%9A%84%E7%89%B9%E6%80%A7-12">C++11的特性 （12）</a></li>
+<li><a href="#dowhile0">do{...}while(0)</a></li>
+<li><a href="#auto">auto</a></li>
+<li><a href="#auto-1">auto&amp;</a></li>
+<li><a href="#auto-">auto &amp;&amp;</a></li>
+<li><a href="#stl">stl</a></li>
+<li><a href="#%E5%87%BD%E6%95%B0%E7%9A%84%E9%87%8D%E5%85%A5">函数的重入</a></li>
+</ul>
+</li>
+<li><a href="#%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0%E6%9E%84%E9%80%A0%E7%9A%84%E9%A1%BA%E5%BA%8F%E6%9E%90%E6%9E%84%E7%9A%84%E9%A1%BA%E5%BA%8F3">构造函数构造的顺序，析构的顺序（3）</a>
+<ul>
+<li><a href="#%E7%A7%BB%E5%8A%A8%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0">移动构造函数</a></li>
+<li><a href="#%E6%88%90%E5%91%98%E5%AF%B9%E8%B1%A1%E6%9E%84%E9%80%A0%E9%A1%BA%E5%BA%8F">成员对象构造顺序</a></li>
+<li><a href="#raii%E5%9F%BA%E4%BA%8E%E4%BB%80%E4%B9%88%E5%AE%9E%E7%8E%B0%E7%9A%842">RAII基于什么实现的（2）</a></li>
+<li><a href="#%E5%BC%95%E7%94%A8%E5%AF%B9%E4%BA%8E%E5%86%85%E7%BD%AE%E7%B1%BB%E5%9E%8B%E5%92%8C%E7%94%B1%E5%86%85%E7%BD%AE%E7%B1%BB%E5%9E%8B%E6%9E%84%E9%80%A0%E7%9A%84struct%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB">引用对于内置类型和由内置类型构造的struct有什么区别</a></li>
+<li><a href="#%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0%E5%92%8C%E6%9E%90%E6%9E%84%E5%87%BD%E6%95%B0%E5%8F%AF%E4%BB%A5%E6%98%AF%E8%99%9A%E5%87%BD%E6%95%B0%E5%90%97">构造函数和析构函数可以是虚函数吗</a></li>
+<li><a href="#%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0%E9%87%8C%E9%9D%A2%E5%8F%AF%E4%BB%A5%E8%B0%83%E8%99%9A%E5%87%BD%E6%95%B0%E5%90%97">构造函数里面可以调虚函数吗</a></li>
+<li><a href="#%E4%B8%89%E4%B8%AA%E7%B1%BBa-b-c-b%E7%BB%A7%E6%89%BFa-c%E7%BB%A7%E6%89%BFb-%E4%B8%80%E4%B8%AAc%E7%9A%84%E5%AF%B9%E8%B1%A1-%E4%BB%96%E7%9A%84%E6%9E%84%E9%80%A0%E9%A1%BA%E5%BA%8F-%E5%92%8C%E6%9E%90%E6%9E%84%E9%A1%BA%E5%BA%8F">三个类A, B, C, B继承A， C继承B， 一个C的对象， 他的构造顺序， 和析构顺序</a></li>
+<li><a href="#%E4%BB%80%E4%B9%88%E6%97%B6%E5%80%99%E5%90%A7%E7%B1%BB%E7%9A%84%E6%9E%90%E6%9E%84%E5%87%BD%E6%95%B0%E5%86%99%E6%88%90%E8%99%9A%E5%87%BD%E6%95%B0-%E4%B8%BA%E4%BB%80%E4%B9%88-%E5%93%AA%E5%9D%97%E5%86%85%E5%AD%98%E4%BC%9A%E6%B3%84%E9%9C%B2-%E6%88%91%E5%AD%90%E7%B1%BB%E5%AF%B9%E8%B1%A1%E7%9A%84%E4%BC%9A%E6%B3%84%E9%9C%B2-%E9%9D%A2%E8%AF%95%E5%AE%98%E7%A1%AE%E5%AE%9A%E5%90%97-%E4%BB%96%E8%AF%B4%E6%98%AF%E5%9F%BA%E7%B1%BB%E7%9A%84%E5%86%85%E5%AD%98%E4%BC%9A%E6%B3%84%E9%9C%B2">什么时候吧类的析构函数写成虚函数， 为什么， 哪块内存会泄露？ 我：子类对象的会泄露， 面试官：确定吗？ 他说是基类的内存会泄露</a></li>
+<li><a href="#%E4%BB%80%E4%B9%88%E6%97%B6%E5%80%99%E5%90%A7%E7%B1%BB%E7%9A%84%E6%9E%90%E6%9E%84%E5%87%BD%E6%95%B0%E5%86%99%E6%88%90%E8%99%9A%E5%87%BD%E6%95%B0-%E4%B8%BA%E4%BB%80%E4%B9%88-%E5%93%AA%E5%9D%97%E5%86%85%E5%AD%98%E4%BC%9A%E6%B3%84%E9%9C%B2-%E6%88%91%E5%AD%90%E7%B1%BB%E5%AF%B9%E8%B1%A1%E7%9A%84%E4%BC%9A%E6%B3%84%E9%9C%B2-%E9%9D%A2%E8%AF%95%E5%AE%98%E7%A1%AE%E5%AE%9A%E5%90%97-%E4%BB%96%E8%AF%B4%E6%98%AF%E5%9F%BA%E7%B1%BB%E7%9A%84%E5%86%85%E5%AD%98%E4%BC%9A%E6%B3%84%E9%9C%B2-1">什么时候吧类的析构函数写成虚函数， 为什么， 哪块内存会泄露？ 我：子类对象的会泄露， 面试官：确定吗？ 他说是基类的内存会泄露</a></li>
+</ul>
+</li>
+<li><a href="#%E6%B7%B1%E6%8B%B7%E8%B4%9D%E5%92%8C%E6%B5%85%E6%8B%B7%E8%B4%9D">深拷贝和浅拷贝</a></li>
+<li><a href="#inline%E5%86%85%E8%81%94%E5%87%BD%E6%95%B0%E5%92%8Cdefine%E5%8C%BA%E5%88%AB5">inline内联函数，和#define区别（5）</a></li>
+<li><a href="#struct%E5%92%8Cunion">struct和union</a></li>
+<li><a href="#%E7%BB%93%E6%9E%84%E4%BD%93%E5%86%85%E5%AD%98%E5%AF%B9%E9%BD%903">结构体内存对齐（3）</a></li>
+<li><a href="#%E7%BB%93%E6%9E%84%E4%BD%93%E5%92%8C%E7%B1%BB%E7%9A%84%E5%8C%BA%E5%88%AB2">结构体和类的区别（2）</a></li>
+<li><a href="#c%E7%B1%BB%E7%9A%84%E5%AF%B9%E8%B1%A1%E5%A4%A7%E5%B0%8F%E7%94%B1%E4%BB%80%E4%B9%88%E5%86%B3%E5%AE%9A">c++类的对象大小由什么决定</a></li>
+<li><a href="#%E5%BD%B1%E5%93%8D-c-class-%E7%B1%BB%E7%9A%84%E5%A4%A7%E5%B0%8F%E7%9A%84%E5%9B%A0%E7%B4%A0%E6%9C%89%E5%93%AA%E4%BA%9B2">影响 C++ class 类的大小的因素有哪些？（2）</a>
+<ul>
+<li><a href="#%E7%B1%BB%E7%9A%84%E5%A4%A7%E5%B0%8F%E6%AF%94%E5%A6%82%E7%A9%BA%E7%B1%BB%E8%BF%99%E7%A7%8D">类的大小，比如空类这种</a></li>
+<li><a href="#%E7%B1%BB%E7%9A%84%E5%A4%A7%E5%B0%8F%E6%AF%94%E5%A6%82%E7%A9%BA%E7%B1%BB%E8%BF%99%E7%A7%8D-1">类的大小，比如空类这种</a></li>
+<li><a href="#%E7%BB%A7%E6%89%BF%E8%BF%87%E7%A8%8B%E4%B8%AD%E7%9A%84%E4%B8%80%E4%BA%9B%E5%A4%84%E7%90%86%E6%AF%94%E5%A6%82%E8%99%9A%E6%8B%9F%E7%BB%A7%E6%89%BF%E8%99%9A%E5%87%BD%E6%95%B0%E9%87%8D%E8%BD%BD%E9%87%8D%E5%86%99%E9%87%8D%E5%AE%9A%E4%B9%89">继承过程中的一些处理，比如虚拟继承、虚函数；重载、重写、重定义</a></li>
+</ul>
+</li>
+<li><a href="#-5"></a></li>
+<li><a href="#c%E5%92%8Cc%E7%BB%93%E6%9E%84%E4%BD%93%E6%9C%89%E5%95%A5%E5%8C%BA%E5%88%AB">c和c++结构体有啥区别</a></li>
+<li><a href="#%E7%9C%8B%E4%BB%A3%E7%A0%812%E5%85%B3%E4%BA%8E%E8%99%9A%E6%9E%90%E6%9E%84%E5%87%BD%E6%95%B0%E5%92%8C%E5%86%85%E5%AD%98%E6%B3%84%E9%9C%B2%E9%97%AE%E9%A2%98">看代码2：关于虚析构函数和内存泄露问题</a></li>
+<li><a href="#%E7%9C%8B%E4%BB%A3%E7%A0%811%E5%85%B3%E4%BA%8E%E5%AD%90%E7%B1%BB%E7%BB%A7%E6%89%BF%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0%E7%9A%84%E9%97%AE%E9%A2%98">看代码1：关于子类继承，构造函数的问题</a>
+<ul>
+<li><a href="#%E7%9C%8B%E4%BB%A3%E7%A0%813%E5%92%8C1%E7%B1%BB%E4%BC%BC%E7%9A%84%E7%9F%A5%E8%AF%86%E7%82%B9">看代码3：和1类似的知识点</a></li>
+</ul>
+</li>
+</ul>
+<h1 id="c里的sort函数是怎么实现的">c++里的sort函数是怎么实现的？</h1>
+<h1 id="cpp异步操作原理线程池策略">cpp异步操作原理，线程池策略</h1>
+<h1 id="python和c的区别2">Python和C++的区别（2）</h1>
+<p>（类型动静态，编译和解释，语法，python适合快速原型开发，数据科学，机器学习，C++适合高性能，底层控制，操作系统，嵌入式</p>
+<p>对于python和cpp可移植性的看法（看我两个都用过）</p>
+<h1 id="函数指针是什么直接用函数名不行吗">函数指针是什么，直接用函数名不行吗</h1>
+<p>（一个指向函数的指针，用来动态调用函数，回调，动态库加载，事件处理，直接调用的话，控制权转移到函数内部，执行完再返回</p>
+<h1 id="表达式和语句的区别">表达式和语句的区别</h1>
+<p>（表达式时一个计算，语句时一系列指令和操作的组合，表达式为操作数和运算符组成，比如“5+3”，语句用来执行任务，比如int a = 5;</p>
+<h1 id="如何让其他文件访问不了本文将的变量硬要访问呢">如何让其他文件访问不了本文将的变量，硬要访问呢？</h1>
+<p>（static限制其他文件访问不了当前文件的，但可以用extern引入static变量</p>
+<h1 id="两个线程修改一个数结果是什么应该想问互斥">两个线程修改一个数，结果是什么（应该想问互斥？</h1>
+<p>（std::mutex的lock和unlock</p>
+<h1 id="代码题手动实现一个memory-allocator">代码题：手动实现一个memory allocator</h1>
+<h1 id="cpu绑核的意义细问对内存和cpu的影响">cpu绑核的意义，细问对内存和cpu的影响</h1>
+<h1 id="如果你要优化cpp代码你有什么思路">如果你要优化cpp代码，你有什么思路？</h1>
+<p>比较懵的，当时说尽可能将代码更改为编译期执行而非运行期，比如constexpr if将分支判断从运行期修改为编译期。（现在想想其实还有很多）</p>
+<h1 id="数组使用指针和下标的区别">数组使用指针和下标的区别？</h1>
+<p>（因为有很多相关知识，我回答了挺多，比如数组作为形参会退化为指针，指针不会有越界可能会访问非法地址，下标好像也会？但是stl里面类似于vector可以使用at方法去访问，越界的时候会有异常处理）</p>
+<h1 id="多线程安全处理">多线程安全处理</h1>
+<h1 id="这些都需要深入理解不能只是八股水平">这些都需要深入理解，不能只是八股水平</h1>
+<h1 id="stdfunction-为什么要有function-我主要说了记录函数运行上下文">std::function 为什么要有function 我主要说了记录函数运行上下文</h1>
+<h1 id="stdbind-这三种你一般在什么场景下使用闭包用哪个为什么">std::bind 这三种你一般在什么场景下使用，闭包用哪个？为什么？</h1>
+<h1 id="符号连接--解决符号连接冲突">符号连接 -&gt;解决符号连接冲突</h1>
+<h1 id="new-malloc-实现原理-扩展讲mmap系统不是所有malloc的块都不回收哦">new malloc 实现原理 （扩展讲mmap）系统不是所有malloc的块都不回收哦</h1>
+<h1 id="new-malloc-实现原理-扩展讲mmap系统不是所有malloc的块都不回收哦-1">new malloc 实现原理 （扩展讲mmap）系统不是所有malloc的块都不回收哦</h1>
+<h2 id="new-malloc区别2">new malloc区别（2）</h2>
+<h1 id="我有一个类文件有一个私有成员如何在不修改我文件的前提下友元打咩访问该成员2">我有一个类文件有一个私有成员，如何在不修改我文件的前提下（友元打咩），访问该成员（2）</h1>
+<p>为什么要这么做，C++ 为什么要有这个，这个不是破坏了封装吗</p>
+<h1 id="用cpp实现一个互斥锁写个小demo">用cpp实现一个互斥锁，写个小demo</h1>
+<p>我写的10个线程的add；</p>
+<p>问一个问题，如果你的那个“result++”不是简单的变量加一而是一个比较复杂的操作，有可能导致这个锁不会被释放，或者说出现一些异常情况，或者说我就执行的中途退出了，没有释放这个锁，怎么办？</p>
+<p>不太会，我瞎说了什么try escape或者assert避免异常</p>
+<p>第三题应该是想问你RAII，通过析构函数确保锁被释放，这样无论是什么错误，它只要到生命周期的结尾就会调用析构函数，所以确保了锁被释放
+第三题应该是想问你RAII，通过析构函数确保锁被释放，这样无论是什么错误，它只要到生命周期的结尾就会调用析构函数，所以确保了锁被释放</p>
+<p><a href="https://www.nowcoder.com/discuss/463508738524172288?sourceSSR=search">https://www.nowcoder.com/discuss/463508738524172288?sourceSSR=search</a>
+<a href="https://www.nowcoder.com/discuss/463508738524172288?sourceSSR=search">https://www.nowcoder.com/discuss/463508738524172288?sourceSSR=search</a></p>
+<h1 id="知不知道strcpy用这个库函数需要注意什么">知不知道strcpy（），用这个库函数需要注意什么</h1>
+<h1 id="lamda表达式介绍一下在哪儿用过为什么要使用lamda表达式3">Lamda表达式介绍一下，在哪儿用过，为什么要使用Lamda表达式？(3)</h1>
+<h1 id="sizeof一个类的大小不知道怎么算的">sizeof一个类的大小(不知道怎么算的)</h1>
+<h1 id="指针常量和常量指针的区别2">指针常量和常量指针的区别（2）</h1>
+<p>const int <em>与int</em> const
+const int <em>与int</em> const</p>
+<h1 id="如何保证线程安全">如何保证线程安全</h1>
+<h2 id="什么是可重入">什么是可重入</h2>
+<h1 id="函数式编程">函数式编程</h1>
+<h1 id="闭包">闭包</h1>
+<h1 id="c一个函数里可能在多个地方异常返回这种情况下用c基本特性如何在返回前知道该函数执行的时间析构">C++一个函数里可能在多个地方异常返回，这种情况下用C++基本特性如何在返回前知道该函数执行的时间（析构）</h1>
+<h1 id="c有哪几种锁">C++有哪几种锁</h1>
+<h2 id="锁用过吗-我说了睡眠锁和自旋锁的实现">锁用过吗？ 我说了睡眠锁和自旋锁的实现</h2>
+<h2 id="cpp-的锁-mutex-是怎么实现的读锁写锁读写锁是什么">Cpp 的锁 mutex 是怎么实现的？读锁，写锁，读写锁是什么？</h2>
+<h2 id="互斥锁-在c中有对其封装的模板类-有哪些">互斥锁， 在C++中有对其封装的模板类， 有哪些？</h2>
+<p>lock_guard, unique_guard, socped_lock等等</p>
+<h2 id="你了解读写锁吗">你了解读写锁吗</h2>
+<h1 id="c调试方法上线之后如何调试">C++调试方法，上线之后如何调试</h1>
+<h1 id=""></h1>
+<h1 id="-1"></h1>
+<h1 id="c中面向对象怎么理解">C++中面向对象怎么理解</h1>
+<h2 id="三大特性">三大特性</h2>
+<p>封装，继承，多态</p>
+<h2 id="重载怎么实现">重载怎么实现</h2>
+<h2 id="重写和重载3">重写和重载（3）</h2>
+<p>你知道原理吗， 编译器是如何识别出两个函数是不同的</p>
+<p>吧多个重载的函数编写到动态库中， 编译器是如何判断两个函数</p>
+<p>加const,常函数算不算重载, 在常成员函数中改变一个变量(不会,用mutable)</p>
+<h1 id="函数指针">函数指针</h1>
+<p>用一个函数指针指向成员函数(多出来this参数...卡住了, 面试官说函数指针加作用域就行了</p>
+<h1 id="c异常这个不太会-抛出异常之后会怎样-两个异常子类继承父类然后想要调用什么什么记不太清了">C++异常,(这个不太会, 抛出异常之后会怎样...., 两个异常,子类继承父类.然后想要调用什么什么,记不太清了</h1>
+<h1 id="cpp模板template用到了什么头文件还是template写在什么头文件不记得了">Cpp模板template用到了什么头文件（还是template写在什么头文件，不记得了）？</h1>
+<h2 id="模板模板特例化-多个文件引用模板头文件模板实例化几次">模板,模板特例化, 多个文件引用模板头文件,模板实例化几次</h2>
+<h1 id="cpp-java和go的区别4聊了很多泛型相关">cpp java和go的区别？（4）（聊了很多泛型相关）</h1>
+<p>面试官提醒内存管理，然后说到new和malloc，brk，问内存池寄了，反问的时候面试官说希望听碎片管理和线程安全的东西，下来看了一下确实很受用</p>
+<h1 id="placement-new">placement new？</h1>
+<p>placement new是在从前申请的空间放数据，使用这个不用申请新空间</p>
+<p>这个是原地new，其实new关键字第一步是分配空间，第二步就是在分配的空间上面执行这个原地new，原地new不开辟空间，就是单纯的在这个空间上面执行构造函数。有意思的是可以在栈空间上面执行这个操作来创建对象hh</p>
+<h2 id="如何在已经申请的内存里newplacement-new">如何在已经申请的内存里new：placement new</h2>
+<h1 id="值传递与引用传递">值传递与引用传递</h1>
+<h1 id="-2"></h1>
+<h1 id="-3"></h1>
+<h1 id="野指针">野指针</h1>
+<h1 id="动态多态">动态多态</h1>
+<h1 id="free一个对象指针-中间发生了什么">free一个对象指针 中间发生了什么</h1>
+<h1 id="c内存泄漏2">C++内存泄漏（2）</h1>
+<p>排查内存泄漏</p>
+<h2 id="delete-是怎样算出回收的数组的长度的">delete []是怎样算出回收的数组的长度的</h2>
+<h2 id="delete如何判断要删除内容的大小">delete如何判断要删除内容的大小</h2>
+<h2 id="cpp什么时候用delete">cpp什么时候用delete[]</h2>
+<h1 id="try-catch">try-catch</h1>
+<h1 id="c程序编译的过程">C++程序编译的过程</h1>
+<h1 id="static关键字在c程序编译过程的哪个阶段起作用">static关键字在C++程序编译过程的哪个阶段起作用？</h1>
+<p>这个真没看过，不过运气好猜到了是在链接阶段，之后看看材料）</p>
+<h1 id="构造函数中可以调用虚函数吗">构造函数中可以调用虚函数吗？</h1>
+<p>（可以调但是一般达不到目的，一开始答对了，但后面追问结果答错了）</p>
+<h1 id="c运行时存储结构">C++运行时存储结构</h1>
+<h2 id="c内存分布">C++内存分布</h2>
+<p>你提到了 .stack，这只是编译器搞得内存吗，你不能在代码里处理吗？</p>
+<p>如果在 .stack 中定义某个很大的对象，这可以吗</p>
+<h2 id="你说到了栈溢出那什么情况下会栈溢出你了解吗">你说到了栈溢出，那什么情况下会栈溢出，你了解吗</h2>
+<p>你有了解在哪个数值上会溢出吗，比如你的栈设置了 1K，2K，1M，2M，这样</p>
+<h2 id="堆和栈区别可不可以深入一下堆和栈其实是一样的14">堆和栈区别（可不可以深入一下？堆和栈其实是一样的）（14）</h2>
+<p>栈是操作系统管理，地址连续，堆由程序员管理，地址不连续，管理不好内存泄漏。</p>
+<p>，我跟他扯内存空间布局，他问我为啥栈要放在最顶端，从最顶端地址向下增。。。。我说堆尽量往低地址放 ，栈尽量往高地址放，这样中间空出来的空间才多，两者不容易装上，可用的空间更大</p>
+<p>（还提到了一个所谓的动态栈？）</p>
+<h2 id="栈和堆的特点-适用场景">栈和堆的特点 适用场景</h2>
+<h2 id="指针指向堆会发生什么问题">指针指向堆会发生什么问题</h2>
+<h2 id="堆-堆为什么能用数组表示">堆， 堆为什么能用数组表示</h2>
+<h2 id="栈为什么比堆快">栈为什么比堆快</h2>
+<h2 id="为什么要分堆和栈">为什么要分堆和栈</h2>
+<h2 id="线程会有自己独立的栈区吗会有独立的堆区吗">线程会有自己独立的栈区吗？会有独立的堆区吗？</h2>
+<h2 id="进程的内存空间">进程的内存空间</h2>
+<h2 id="管理内存">管理内存</h2>
+<h2 id="内存分配">内存分配</h2>
+<h2 id="cpp内存分区">cpp内存分区</h2>
+<h2 id="如何把对象只分配到栈区">如何把对象只分配到栈区</h2>
+<h1 id="内存动态分配-i和i的区别">内存动态分配 i++和++i的区别</h1>
+<h1 id="数组名字可以作为指针吗">数组名字可以作为指针吗</h1>
+<h1 id="类型转换">类型转换</h1>
+<h1 id="c和c两者各有什么优缺点分别适合用在什么情况下4">C和C++两者各有什么优缺点，分别适合用在什么情况下（4）</h1>
+<pre><code class="language-c++"><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">fun</span><span class="hljs-params">()</span>  
+</span>{ 
+   <span class="hljs-type">int</span>* a=<span class="hljs-built_in">malloc</span>(<span class="hljs-built_in">sizeof</span>(<span class="hljs-type">int</span>));  
+ <span class="hljs-keyword">return</span> *a; 
+{ 
+   <span class="hljs-type">int</span>* a=<span class="hljs-built_in">malloc</span>(<span class="hljs-built_in">sizeof</span>(<span class="hljs-type">int</span>));  
+ <span class="hljs-keyword">return</span> *a; 
+}
+问返回值是多少，这段代码有啥问题
+</code></pre>
+<h2 id="c和c差别3">C和C++差别（3）</h2>
+<h1 id="对指针字符数组求sizeof">对指针，字符数组求sizeof</h1>
+<h1 id="写一个空类编译器自动生成了哪些函数3">写一个空类，编译器自动生成了哪些函数（3）</h1>
+<h2 id="拷贝构造在哪些情况下不自动生成">拷贝构造在哪些情况下不自动生成</h2>
+<h1 id="空类--空类继承--空基类优化">空类 / 空类继承 / 空基类优化</h1>
+<h1 id="c-forward-作用">c++ forward 作用</h1>
+<h1 id="左值和右值4">左值和右值（4）</h1>
+<p>右值引用 ：好不容易遇到个cpp的，我就从引入引用解决了什么问题，介绍了一下std::move() 和 完美转发是如何实现的（话说每次面这个题，我都想手写一下），还说了一下完美转发失败的场景。</p>
+<p>左值右值,i++ ++i哪个是左值哪个是右值</p>
+<h2 id="写一个右值赋值运算符">写一个右值赋值运算符</h2>
+<h1 id="完美转发2">完美转发（2）</h1>
+<p>干啥的</p>
+<p>就是右值通过传参进函数的时候，就不是右值了，就会成为左值，这就要通过forward让他保持原来的右值性质，就是完美转发。</p>
+<h2 id="指针和数组的区别">指针和数组的区别</h2>
+<h1 id="如何实现memcpy">如何实现memcpy？</h1>
+<p>常规的思路有什么问题（从头开始复制） 如何解决？ 答案：从后面往前面的顺序复制数据</p>
+<h1 id="raii">RAII</h1>
+<h1 id="迭代器知道吗实现迭代器">迭代器知道吗，实现迭代器++</h1>
+<h1 id="智能指针28">智能指针(28)</h1>
+<p>对智能指针的理解 重点讲讲shared_ptr weak_ptr之间的关系</p>
+<p>面试官实际想问<code>unique_ptr,share_ptr</code>，我提了一嘴之前还有<code>auto_ptr</code>，后来弃用了，然后分别说了一下<code>unique_ptr,share_ptr</code>，之后说到<code>share_ptr</code>的循环引用问题，又介绍了用于解决循环引用问题的<code>weak_ptr</code>。</p>
+<p>常用的智能指针</p>
+<h2 id="很熟练了从raii到autoptr为什么废弃再到shared_ptrunique_ptr详细介绍了里面的方法和一些注意事项">（很熟练了从RAII到autoptr为什么废弃再到shared_ptr、unique_ptr，详细介绍了里面的方法和一些注意事项）</h2>
+<h2 id="智能指针解决内存泄漏问题的原理">智能指针解决内存泄漏问题的原理</h2>
+<h2 id="unique_ptr智能指针是如何做到独占的">unique_ptr智能指针是如何做到独占的</h2>
+<h2 id="shared_ptr内部实现的机制">shared_ptr内部实现的机制</h2>
+<h2 id="shared_ptr计数变量存放位置">shared_ptr计数变量存放位置</h2>
+<h2 id="unique_ptr和shared_ptr差异">unique_ptr和shared_ptr差异</h2>
+<h2 id="对unique_ptr进行stdmove操作">对unique_ptr进行std::move()操作</h2>
+<h2 id="future-智能指针-decltype">future 智能指针 decltype</h2>
+<h2 id="weakptr">weakptr</h2>
+<p>一个是 shared_ptr，一个是 weak_ptr，它们的区别和使用场景</p>
+<p>我们一般不会发生循环引用，weak_ptr 那还有什么使用场景</p>
+<h2 id="autoptr">autoptr</h2>
+<h2 id="shard_ptr是线程安全的吗为什么不保证线程安全">shard_ptr是线程安全的吗，为什么不保证线程安全</h2>
+<h2 id="给了一段cpp代码找出错误关于智能指针unique_ptr的指向新对象后原来指向的对象会销毁">给了一段cpp代码，找出错误。关于智能指针unique_ptr的：指向新对象后，原来指向的对象会销毁</h2>
+<h2 id="给了一段cpp代码找出错误关于智能指针unique_ptr的指向新对象后原来指向的对象会销毁-1">给了一段cpp代码，找出错误。关于智能指针unique_ptr的：指向新对象后，原来指向的对象会销毁</h2>
+<h2 id="make_shared和shared_ptr">make_shared和shared_ptr</h2>
+<h1 id="手写shared_ptr3">手写shared_ptr（3）</h1>
+<p>智能指针 稍微手写了一下shard_ptr 有锁版  遇到这个题我还会扩展的聊一下 weak_ptr 的lock 如何实现的，和详细聊一下shard底层实现（然后有个面官问我这是你的优化吗，我说是我看源码的个人分析）</p>
+<h1 id="手撕unique_ptr控制权转移移动语义">手撕：Unique_ptr，控制权转移(移动语义）</h1>
+<h1 id="cpp-class存储相关以及虚函数">cpp class存储相关以及虚函数</h1>
+<h1 id="手撕类继承堆栈上分别代码实现多态">手撕：类继承，堆栈上分别代码实现多态</h1>
+<h1 id="抽象类虚函数">抽象类，虚函数</h1>
+<h1 id="a-b类都有虚函数-c继承a和b--c的大小-c有几个虚指针">A, B类都有虚函数, C继承A和B, , C的大小, C有几个虚指针</h1>
+<h1 id="多态的底层及原理23">多态的底层及原理（23）</h1>
+<p>静态多态，动态多态，继承，虚函数，重写，父类指针/引用指向子类对象，虚函数表，虚表指针，派生类虚表，纯虚函数，抽象类。本来还想说一下虚析构，协变，为什么没有虚构造，但是感觉说得不少了，就没说了。<code>override</code>跟<code>final</code>倒是没想起来。</p>
+<h2 id="虚函数表指针八股答出来了给例题判断结果做错了">虚函数表指针：八股答出来了，给例题判断结果做错了</h2>
+<h2 id="多态-虚函数实现原理">多态 虚函数实现原理</h2>
+<p>虚函数表是什么（2）</p>
+<p>为了实现C++的多态，C++使用了一种动态绑定的技术。这个技术的核心是虚函数表（下文简称虚表）。每个包含了虚函数的类都包含一个虚表。</p>
+<p>我们知道，当一个类（A）继承另一个类（B）时，类A会继承类B的函数的调用权。所以如果一个基类包含了虚函数，那么其继承类也可调用这些虚函数，换句话说，一个类继承了包含虚函数的基类，那么这个类也拥有自己的虚表。  我们来看以下的代码。类A包含虚函数vfunc1，vfunc2，由于类A包含虚函数，故类A拥有一个虚表。</p>
+<p>那么，什么时候会执行函数的动态绑定？这需要符合以下三个条件。</p>
+<ul>
+<li>
+<p>​    通过指针来调用函数</p>
+</li>
+<li>
+<p>​    指针upcast向上转型（继承类向基类的转换称为upcast，关于什么是upcast，可以参考本文的参考资料）</p>
+</li>
+<li>
+<p>​    调用的是虚函数</p>
+</li>
+<li>
+<p>​    通过指针来调用函数</p>
+</li>
+<li>
+<p>​    指针upcast向上转型（继承类向基类的转换称为upcast，关于什么是upcast，可以参考本文的参考资料）</p>
+</li>
+<li>
+<p>​    调用的是虚函数</p>
+<p>如果一个函数调用符合以上三个条件，编译器就会把该函数调用编译成动态绑定，其函数的调用过程走的是上述通过虚表的机制。</p>
+</li>
+</ul>
+<h2 id="一个类空指针可以调用虚函数吗可以调用普通函数吗">一个类空指针可以调用虚函数吗？可以调用普通函数吗？</h2>
+<h2 id="动态绑定和静态绑定区别">动态绑定和静态绑定区别</h2>
+<h2 id="为啥需要虚函数">为啥需要虚函数</h2>
+<h2 id="虚函数可以是内联的吗">虚函数可以是内联的吗</h2>
+<h2 id="纯虚函数2">纯虚函数（2）</h2>
+<h2 id="基类和派生类虚函数表交换会怎么样">基类和派生类虚函数表交换会怎么样</h2>
+<h2 id="静态多态">静态多态</h2>
+<h1 id="整形和浮点的存储">整形和浮点的存储</h1>
+<h2 id="浮点数的等0的判断">浮点数的等0的判断</h2>
+<h1 id="标准库用到哪些其实他问的是stl容器超级重点智能指针同级别">标准库用到哪些（其实他问的是STL，容器）（超级重点，智能指针同级别）</h1>
+<h2 id="vectorlistmapunordered_map底层实现">vector,list,map,unordered_map底层实现</h2>
+<h2 id="vector的erase方法用i删除会有问题吗">vector的erase()方法用i++删除会有问题吗</h2>
+<h2 id="vector中push_back和emplace_back的区-别">vector中push_back和emplace_back的区 别</h2>
+<h2 id="set和map的理解及使用场景">set和map的理解及使用场景</h2>
+<p>map， 指定一个key， 我需要用for删掉这个key，需要注意什么</p>
+<h2 id="map和unordered_map的结构及使用场景及区别">map和unordered_map的结构及使用场景及区别</h2>
+<ol>
+<li>细问了unordered_map哈希是怎么实现的，我不知道，只答了一般哈希表可以用链表解决冲突</li>
+</ol>
+<h2 id="vector内存扩容机制vector扩容策略15倍扩容-为什么比2倍好">vector内存扩容机制（vector扩容策略，1.5倍扩容 为什么比2倍好）</h2>
+<p>我说数组。自动扩容，然后我自作主张说  一个vector，当它的数组大概装满2/3左右就会扩容，当数组元素少于1/3的时候回自动缩容（其实我没剖析过stl源码，我不太确定是否真是这样。。。。。），然后面试官顺着我的话问我，为啥装到２／３左右就开始扩容，而不是等数组装满了，已经完全装不下了再扩容。。。。我确实没想过这问题，不知道答案。。我的回答是：从理性分析的角度出发，我不知道为啥。。。感性的说，这叫未雨绸缪。。。。。然后他说ｏｋｏｋ就下一个问题了</p>
+<h2 id="怎么降低扩容次数reserveresize">怎么降低扩容次数(reserve,resize)</h2>
+<p>它俩的区别</p>
+<h2 id="-4"></h2>
+<h2 id="stl-sort-为什么可以避免爆栈不会递归如何避免爆栈">STL sort 为什么可以避免爆栈（？不会），递归如何避免爆栈</h2>
+<h2 id="map为什么使用红黑树与avl有什么区别为什么不用avl实现">map为什么使用红黑树，与AVL有什么区别，为什么不用AVL实现？</h2>
+<h2 id="vector为什么可以随机访问">vector为什么可以随机访问</h2>
+<h2 id="vector底层数组大小分配">vector底层数组大小分配</h2>
+<h2 id="vectorlistmapset等stl容器相关">vector，list，map，set等STL容器相关</h2>
+<h2 id="vector扩容后缩减临时变量swap当时没想到swap">vector扩容后缩减（临时变量+swap，当时没想到swap）</h2>
+<h2 id="stl中的优先队列的实现">STL中的优先队列的实现</h2>
+<h1 id="c特性11">C++特性（11）</h1>
+<h2 id="c11的特性-12">C++11的特性 （12）</h2>
+<p>用过哪些（项目里面）</p>
+<p>11 新特性后 STL 有啥变化？举个例子，比如 vector 有啥新操作？</p>
+<h2 id="dowhile0">do{...}while(0)</h2>
+<h2 id="auto">auto</h2>
+<h2 id="auto-1">auto&amp;</h2>
+<h2 id="auto-">auto &amp;&amp;</h2>
+<h2 id="stl">stl</h2>
+<h2 id="函数的重入">函数的重入</h2>
+<h1 id="构造函数构造的顺序析构的顺序3">构造函数构造的顺序，析构的顺序（3）</h1>
+<p>（先基类，再成员对象，再自己</p>
+<h2 id="移动构造函数">移动构造函数</h2>
+<h2 id="成员对象构造顺序">成员对象构造顺序</h2>
+<p>（声明顺序，不是构造函数中的调用顺序</p>
+<h2 id="raii基于什么实现的2">RAII基于什么实现的（2）</h2>
+<p>（生命周期、作用域、构造析构</p>
+<h2 id="引用对于内置类型和由内置类型构造的struct有什么区别">引用对于内置类型和由内置类型构造的struct有什么区别</h2>
+<h2 id="构造函数和析构函数可以是虚函数吗">构造函数和析构函数可以是虚函数吗</h2>
+<h2 id="构造函数里面可以调虚函数吗">构造函数里面可以调虚函数吗</h2>
+<h2 id="三个类a-b-c-b继承a-c继承b-一个c的对象-他的构造顺序-和析构顺序">三个类A, B, C, B继承A， C继承B， 一个C的对象， 他的构造顺序， 和析构顺序</h2>
+<h2 id="什么时候吧类的析构函数写成虚函数-为什么-哪块内存会泄露-我子类对象的会泄露-面试官确定吗-他说是基类的内存会泄露">什么时候吧类的析构函数写成虚函数， 为什么， 哪块内存会泄露？ 我：子类对象的会泄露， 面试官：确定吗？ 他说是基类的内存会泄露</h2>
+<h2 id="什么时候吧类的析构函数写成虚函数-为什么-哪块内存会泄露-我子类对象的会泄露-面试官确定吗-他说是基类的内存会泄露-1">什么时候吧类的析构函数写成虚函数， 为什么， 哪块内存会泄露？ 我：子类对象的会泄露， 面试官：确定吗？ 他说是基类的内存会泄露</h2>
+<h1 id="深拷贝和浅拷贝">深拷贝和浅拷贝</h1>
+<h1 id="inline内联函数和define区别5">inline内联函数，和#define区别（5）</h1>
+<h1 id="struct和union">struct和union</h1>
+<h1 id="结构体内存对齐3">结构体内存对齐（3）</h1>
+<h1 id="结构体和类的区别2">结构体和类的区别（2）</h1>
+<p>struct class区别，上个假期看过Lippmann的《深入理解C++对象模型》，有点印象，跟他扯。说class是struct的完全上位替代，struct完全可以抛弃，留着它只是为了和c兼容讲了下class为何更好，说了下封装之类东西，，，不知道扯啥好。。开始分析两者内存布局异同。我说大部分情况下struct class内存布局一样，除了class有虚函数的时候，于是开始扯虚函数，虚函数表，虚指针，含虚函数的class内存布局和不含虚函数class内存布局区别。他问了一下一个含虚函数的类的对象啥时候初始化虚指针。。。当时脑抽没答出来。。应该是调用构造函数初始化的时候嘛。。。</p>
+<h1 id="c类的对象大小由什么决定">c++类的对象大小由什么决定</h1>
+<h1 id="影响-c-class-类的大小的因素有哪些2">影响 C++ class 类的大小的因素有哪些？（2）</h1>
+<p>内存对齐会有影响吗？</p>
+<h2 id="类的大小比如空类这种">类的大小，比如空类这种</h2>
+<h2 id="类的大小比如空类这种-1">类的大小，比如空类这种</h2>
+<h2 id="继承过程中的一些处理比如虚拟继承虚函数重载重写重定义">继承过程中的一些处理，比如虚拟继承、虚函数；重载、重写、重定义</h2>
+<h1 id="-5"></h1>
+<h1 id="c和c结构体有啥区别">c和c++结构体有啥区别</h1>
+<h1 id="看代码2关于虚析构函数和内存泄露问题">看代码2：关于虚析构函数和内存泄露问题</h1>
+<h1 id="看代码1关于子类继承构造函数的问题">看代码1：关于子类继承，构造函数的问题</h1>
+<h2 id="看代码3和1类似的知识点">看代码3：和1类似的知识点</h2>
+
+            
+            
+        </body>
+        </html>
