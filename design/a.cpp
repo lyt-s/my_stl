@@ -73,13 +73,16 @@ void* memcpy(void* dest, void* src, size_t num) {
   return ret;
 }
 
+#define PTR_INT int*
+
 int main() {
   std::thread t1(printChar);
   std::thread t2(printNumber);
 
   t1.join();
   t2.join();
-
+  PTR_INT p1, p2;
+  // int a[][] = {{1, 2, 3}, {4, 5, 6}};
   std::cout << std::endl;
 
   return 0;
