@@ -1,42 +1,39 @@
+#include <cmath>
 #include <iostream>
-#include <queue>
-#include <vector>
 using namespace std;
-
-class A {
- public:
-  A() = default;
-  A(const A& a) { cout << "A& called" << endl; }
-  A(A&& a) { cout << "A&& called" << endl; }
-};
-class B {
- public:
-  B() = default;
-  B(const B& a) { cout << "B& called" << endl; }
-  // B(B&& a) { cout << "B&& called" << endl; }
-};
-
-class C {
- public:
-  A a;
-  B b;
-  string str;
-  vector<int> vec;
-};
+bool isprime(int input) {
+  if (input < 2) {
+    return false;
+  }
+  for (int i = 2; i <= sqrt(input); i++) {
+    if (input % i == 0) {
+      return false;
+    }
+  }
+  return true;
+}
+int gcd(int a, int b) {
+  while (b) {
+    int tmp = b;
+    b = a % b;
+    a = tmp;
+  }
+  return a;
+}
 int main() {
-  C q;
-  q.str = "123456";
-  q.vec.resize(100);
-  C w(std::move(q));
-
-  int* ptr = new int(42);
-  delete ptr;  // 释放内存
-
-  // 此时，ptr成为一个空悬指针，因为它指向的内存已经被释放
-  std::cout << *ptr << std::endl;  // 访问空悬指针，可能导致未定义行为
-
-  int* ptr2 = nullptr;
-
-  std::cout << *ptr2 << std::endl;
+  int t{};
+  cin >> t;
+  for (int i = 0; i < t; i++) {
+    int n{};
+    cin >> n;
+    for (int j = 2; j <= n; j++) {
+      int tmp = gcd(n, j);
+      if (isprime(tmp)) {
+        cout << j << endl;
+        break;
+      }
+    }
+  }
   return 0;
 }
+// 64 位输出请用 printf("%lld")
