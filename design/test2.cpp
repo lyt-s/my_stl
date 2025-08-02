@@ -1,48 +1,74 @@
-#include <bits/stdc++.h>
+#include <algorithm>
+#include <iostream>
+#include <string>
+#include <vector>
 using namespace std;
 
-int getDistance(pair<int, int> a, pair<int, int> b) {
-  return abs(a.first - b.first) + abs(a.second - b.second);
+const int MAXN = 100005;
+vector<int> tree[MAXN];  // 树的邻接表表示
+char colors[MAXN];       // 节点颜色
+int blackCount[MAXN];    // 记录每个子树中黑色节点的数量
+int maxBlack[MAXN];  // 记录删除每个红色节点后，剩余连通块中黑色节点数量的最大值
+
+void dfs(int node, int parent) {
+  blackCount[node] = (colors[node] == 'B' ? 1 : 0);
+  for (int child : tree[node]) {
+    if (child != parent) {
+      dfs(child, node);
+      blackCount[node] += blackCount[child];
+    }
+  }
 }
 
-int getMinCost(pair<int, int> init, pair<int, int> target,
-               vector<pair<int, int>> nodes) {
-  int min = INT_MAX, min_i = 0, res = 0;
-
-  for (int i = 0; i < nodes.size(); ++i) {
-    int d1 = getDistance(init, nodes[i]);
-    int d2 = getDistance(target, nodes[i]);
-    int diff = d2 + d1 - 2 * d2;
-    if (diff < min) {
-      min = diff;
-      min_i = i;
+void dfsMaxBlack(int node, int parent, int totalBlack) {
+  for (int child : tree[node]) {
+    if (child != parent) {
+      int newTotalBlack =
+          totalBlack - (colors[child] == 'B' ? blackCount[child] : 0);
+      maxBlack[node] =
+          max(maxBlack[node],
+              newTotalBlack +
+                  (colors[node] == 'B'
+                       ? blackCount[node] - (colors[node] == 'B' ? 1 : 0)
+                       : 0));
+      dfsMaxBlack(child, node, newTotalBlack);
     }
   }
-
-  for (int i = 0; i < nodes.size(); ++i) {
-    int d1 = getDistance(init, nodes[i]);
-    int d2 = getDistance(target, nodes[i]);
-    if (i == min_i) {
-      res += d1 + d2;
-    } else {
-      res += 2 * d2;
-    }
-  }
-
-  return res;
 }
 
 int main() {
-  pair<int, int> init, target;
-  vector<pair<int, int>> nodes;
   int n;
-  cin >> init.first >> init.second >> target.first >> target.second;
   cin >> n;
+  string colorStr;
+  cin >> colorStr;
   for (int i = 0; i < n; ++i) {
-    nodes.emplace_back(0, 0);
-    cin >> nodes.back().first >> nodes.back().second;
+    colors[i] = colorStr[i];
   }
-  cout << getMinCost(init, target, nodes) << endl;
+  for (int i = 0; i < n - 1; ++i) {
+    int u, v;
+    cin >> u >> v;
+    --u;
+    --v;  // 将节点编号转换为从0开始
+    tree[u].push_back(v);
+    tree[v].push_back(u);
+  }
+
+  dfs(0, -1);  // 从根节点开始DFS，计算每个子树中黑色节点的数量
+  int totalBlack = 0;
+  for (int i = 0; i < n; ++i) {
+    if (colors[i] == 'B') {
+      totalBlack++;
+    }
+  }
+
+  int maxVal = 0;
+  for (int i = 0; i < n; ++i) {
+    if (colors[i] == 'R') {
+      dfsMaxBlack(i, -1, totalBlack);
+      maxVal = max(maxVal, maxBlack[i]);
+    }
+  }
+
+  cout << maxVal << endl;
   return 0;
 }
-// 64 位输出请用 printf("%lld")
